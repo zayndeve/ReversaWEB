@@ -1,47 +1,60 @@
+using ReversaWEB.Services;
 using WebApplication1.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddControllers()
+.AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+    }); ;
+builder.Services.AddOpenApi(); // Optional OpenAPI/Swagger
 
-// Register controllers and MongoDBService as a singleton
-builder.Services.AddControllers();
+// Register MongoDBService first (since others depend on it)
 builder.Services.AddSingleton<MongoDBService>();
 
-// Enable CORS for all origins (AllowAll)
+// Register your business services
+builder.Services.AddSingleton<MemberService>();
+builder.Services.AddSingleton<AuthService>();   // ✅ Add this line
+
+
+// Enable CORS for all origins
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+    options.AddPolicy("AllowAll", policy =>
+        policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 });
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configure middleware
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
-app.UseHttpsRedirection();
-
-// Use CORS
 app.UseCors("AllowAll");
+
+// optional: disable HTTPS redirection if you only test with Postman HTTP
+// app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
-// Map controllers
 app.MapControllers();
 
-// Ensure MongoDBService is created at startup so it attempts connection and prints status
+// Ensure MongoDBService connects at startup
 var mongo = app.Services.GetRequiredService<MongoDBService>();
-Console.WriteLine("Server running with MongoDB connection.");
+Console.WriteLine("✅ Server running with MongoDB connection.");
 
+// Run the app
 app.Run();
 
-// keep the small WeatherForecast record if needed by samples
+// keep WeatherForecast if you need it for sample controllers
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {
     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
 }
+
+
+

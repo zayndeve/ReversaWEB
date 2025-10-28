@@ -43,3 +43,11 @@
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/WebApplication1.pdb
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/WebApplication1.genruntimeconfig.cache
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/ref/WebApplication1.dll
+/Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/WebApplication1.sourcelink.json
+/Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/bin/Debug/net9.0/WebApplication1.staticwebassets.runtime.json
+/Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/bin/Debug/net9.0/BCrypt.Net-Next.dll
+/Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/bin/Debug/net9.0/Microsoft.IdentityModel.Abstractions.dll
+/Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/bin/Debug/net9.0/Microsoft.IdentityModel.JsonWebTokens.dll
+/Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/bin/Debug/net9.0/Microsoft.IdentityModel.Logging.dll
+/Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/bin/Debug/net9.0/Microsoft.IdentityModel.Tokens.dll
+/Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/bin/Debug/net9.0/System.IdentityModel.Tokens.Jwt.dll
