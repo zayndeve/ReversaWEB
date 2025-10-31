@@ -53,7 +53,6 @@
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/bin/Debug/net9.0/System.IdentityModel.Tokens.Jwt.dll
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/WebApplication1.RazorAssemblyInfo.cache
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/WebApplication1.RazorAssemblyInfo.cs
-/Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/compressed/dg8uo91myk-3dtpxwz0ex.gz
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/compressed/zg4bcwajl4-s46i8e5wpu.gz
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/compressed/d051cyf2gk-sus4olk4b4.gz
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/compressed/0ozlq0y1p1-185wgx4apn.gz
@@ -74,4 +73,5 @@
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/compressed/j8p4ubh9m9-ry0jhqsvfa.gz
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/compressed/ut2owmvmdy-iu0filno1w.gz
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/compressed/zm96xy3oxq-qorj0l7gyu.gz
-/Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/compressed/nzmdndmkw3-kzfsch0jr0.gz
+/Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/compressed/dg8uo91myk-9r0fnvszui.gz
+/Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/compressed/nzmdndmkw3-vopzr5b14t.gz

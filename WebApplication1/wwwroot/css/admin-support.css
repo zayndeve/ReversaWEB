@@ -1,55 +1,138 @@
-/* === Support Page & Cards (Shared with Dashboard) === */
+/* === Support Page & Cards (Improved styles) === */
 
-.dashboard-page__header {
+/* Page background and centering (scoped to admin support) */
+.admin-support-root .dashboard-page {
+  min-height: calc(100vh - 120px);
   display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin-bottom: 20px;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  /* soft blue -> green gradient similar to the design */
+  background: linear-gradient(90deg, #40a9ff 0%, #2ecc71 100%);
+  color: #0b1720;
 }
 
-.dashboard-page__header-title {
-  font-size: 28px;
-  font-weight: 600;
-  color: #1e1e1e;
+.admin-support-root .dashboard-page__main {
+  width: 100%;
+  max-width: 980px;
 }
 
-.dashboard-page__header-subtext {
-  color: #777;
+.admin-support-root .dashboard-page__header {
+  display: block;
+  margin-bottom: 22px;
+}
+
+.admin-support-root .dashboard-page__header-title {
+  font-size: 34px;
+  font-weight: 700;
+  color: #0c1720;
+  margin: 0 0 8px 0;
+}
+
+.admin-support-root .dashboard-page__header-subtext {
+  color: rgba(11, 23, 32, 0.72);
   font-size: 15px;
+  margin: 0;
 }
 
-/* Feature Card Grid */
-.dashboard-page__feature-grid {
+/* Grid wrapper - center the single card */
+.admin-support-root .dashboard-page__feature-grid {
   display: flex;
-  flex-wrap: wrap;
+  align-items: flex-start;
   gap: 20px;
 }
 
-/* Card style */
-.dashboard-page__feature-card {
-  border-radius: 16px;
-  padding: 20px;
+/* Card style - cleaner, higher contrast */
+.admin-support-root .dashboard-page__feature-card {
+  border-radius: 14px;
+  padding: 26px 28px;
   width: 100%;
-  max-width: 400px;
-  min-height: 180px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-  background-color: #e8f0fe;
-  transition: transform 0.2s ease;
+  max-width: 520px;
+  box-shadow: 0 8px 30px rgba(11, 23, 32, 0.14);
+  background: rgba(255, 255, 255, 0.98);
+  transition: transform 180ms ease, box-shadow 180ms ease;
 }
 
-.dashboard-page__feature-card:hover {
-  transform: translateY(-5px);
+.admin-support-root .dashboard-page__feature-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 40px rgba(11, 23, 32, 0.18);
 }
 
-.dashboard-page__feature-title {
-  font-size: 18px;
+.admin-support-root .dashboard-page__feature-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 12px 0;
+  color: #0b1720;
+}
+
+/* Contact list inside the card */
+.admin-support-root .contact-list {
+  list-style: none;
+  padding: 0;
+  margin: 6px 0 0 0;
+  display: grid;
+  gap: 12px;
+}
+
+.admin-support-root .contact-item {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.admin-support-root .icon {
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.02));
+  color: #0b1720;
+}
+
+.admin-support-root .icon.icon-name::before {
+  content: "👤";
+}
+.admin-support-root .icon.icon-email::before {
+  content: "✉️";
+}
+.admin-support-root .icon.icon-phone::before {
+  content: "☎️";
+}
+
+.admin-support-root .contact-label {
+  min-width: 70px;
+  color: #6b7280; /* muted label */
   font-weight: 600;
-  margin-bottom: 10px;
-  color: #1a1a1a;
 }
 
-.dashboard-page__feature-desc {
-  font-size: 14px;
-  color: #555;
-  line-height: 1.5;
+.admin-support-root .contact-value {
+  color: #0b1720;
+  font-weight: 600;
+}
+
+.admin-support-root .contact-value a {
+  color: #0b1720;
+  text-decoration: none;
+}
+
+/* Responsive tweaks */
+@media (max-width: 640px) {
+  .admin-support-root .dashboard-page__header-title {
+    font-size: 26px;
+  }
+  .admin-support-root .dashboard-page__feature-card {
+    padding: 20px;
+    max-width: 100%;
+  }
+  .admin-support-root .icon {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+  .admin-support-root .contact-label {
+    min-width: 64px;
+  }
 }

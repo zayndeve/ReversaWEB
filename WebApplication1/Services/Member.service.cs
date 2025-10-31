@@ -37,7 +37,9 @@ namespace WebApplication1.Services
                     MemberEmail = input.MemberEmail,
                     MemberPhone = input.MemberPhone,
                     MemberPassword = input.MemberPassword,
-                    MemberType = input.MemberType ?? MemberType.User,
+                    // Always create regular users via the public signup endpoint.
+                    // Admin accounts must be created via the admin flow (ProcessSignupAsync)
+                    MemberType = MemberType.User,
                     MemberImage = input.MemberImage,
                     MemberStatus = MemberStatus.Active,
                     MemberPoints = 0,

@@ -1,8 +1,7 @@
 /* Support when the home view is rendered inside the shared layout: apply the same
-   root layout rules to a `.home-root` wrapper so styles don't depend on the
-   document <body> being the page root. */
-.home-root,
-body {
+  root layout rules to a `.home-root` wrapper so styles don't depend on the
+  document <body> being the page root. */
+.home-root {
   /* Layout: place the main panels side-by-side on wide screens */
   display: flex;
   flex-direction: row;
@@ -15,7 +14,7 @@ body {
   font-family: Arial, sans-serif;
 }
 
-.card-container {
+.home-root .card-container {
   position: relative;
   height: 600px;
   width: 600px;
@@ -24,12 +23,11 @@ body {
   border-radius: 16px;
 }
 
-/* Ensure the left panel keeps its size when inside the body flex row */
-.card-container {
+.home-root .card-container {
   flex: 0 0 600px;
 }
 
-.card {
+.home-root .card {
   position: absolute;
   transition: all 0.5s ease;
   display: flex;
@@ -45,7 +43,7 @@ body {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.card:hover {
+.home-root .card:hover {
   height: 600px !important;
   width: 600px !important;
   top: 0 !important;
@@ -56,7 +54,7 @@ body {
   box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
 }
 
-.card-d3 {
+.home-root .card-d3 {
   position: absolute;
   transition: all 0.5s ease;
   display: flex;
@@ -72,7 +70,7 @@ body {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.card-d3:hover {
+.home-root .card-d3:hover {
   height: 600px !important;
   width: 600px !important;
   top: auto !important;
@@ -83,7 +81,7 @@ body {
   box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
 }
 
-.card-content {
+.home-root .card-content {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -93,30 +91,30 @@ body {
   transition: all 0.3s ease;
 }
 
-.card:hover .card-content,
-.card-d3:hover .card-content {
+.home-root .card:hover .card-content,
+.home-root .card-d3:hover .card-content {
   padding-bottom: 2.5rem;
 }
 
-.card-title {
+.home-root .card-title {
   font-size: 1.25rem;
   font-weight: bold;
   margin-bottom: 0.5rem;
 }
 
-.card-description {
+.home-root .card-description {
   font-size: 0.875rem;
   opacity: 0;
   max-height: 0;
   transition: all 0.3s ease;
 }
 
-.card:hover .card-description,
-.card-d3:hover .card-description {
+.home-root .card:hover .card-description,
+.home-root .card-d3:hover .card-description {
   opacity: 1;
   max-height: 100px;
 }
-.dual__content {
+.home-root .dual__content {
   /* Make the right-side box a fixed-size panel that sits beside the card container */
   width: 420px;
   max-width: 45vw;
@@ -131,7 +129,7 @@ body {
   padding: 20px;
   box-sizing: border-box;
 }
-.dual__content img {
+.home-root .dual__content img {
   width: 250px;
   height: 250px;
   margin-top: 10px;
@@ -139,32 +137,32 @@ body {
 
 /* Responsive: stack vertically on narrower screens */
 @media (max-width: 850px) {
-  body {
+  .home-root {
     flex-direction: column;
     gap: 24px;
     padding: 24px;
   }
 
-  .card-container,
-  .dual__content {
+  .home-root .card-container,
+  .home-root .dual__content {
     width: 100%;
     max-width: 900px;
     height: auto;
   }
 
-  .card-container {
+  .home-root .card-container {
     height: auto;
   }
 }
-.button-container {
+.home-root .button-container {
   display: flex;
   gap: 16px;
   position: relative;
   margin-bottom: 50px;
 }
 
-.login-button,
-.signup-button {
+.home-root .login-button,
+.home-root .signup-button {
   padding: 10px 24px;
   border-radius: 8px;
   color: white;
@@ -174,8 +172,8 @@ body {
   transition: all 0.3s ease-in-out;
 }
 
-.login-button,
-.signup-button {
+.home-root .login-button,
+.home-root .signup-button {
   border: none;
   padding: 10px 20px;
   border-radius: 25px;
@@ -186,20 +184,20 @@ body {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.login-button {
+.home-root .login-button {
   background: linear-gradient(135deg, #a7c957, #6a994e);
 }
 
-.login-button:hover {
+.home-root .login-button:hover {
   background: linear-gradient(135deg, #6a994e, #a7c957);
   transform: scale(1.05);
 }
 
-.signup-button {
+.home-root .signup-button {
   background: linear-gradient(135deg, #4a90e2, #2a63bc);
 }
 
-.signup-button:hover {
+.home-root .signup-button:hover {
   background: linear-gradient(135deg, #2a63bc, #4a90e2);
   transform: scale(1.05);
 }

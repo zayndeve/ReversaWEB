@@ -304,7 +304,7 @@ namespace WebApplication1.Controllers
 
         // ====== Admin Panel (Update Data) ====== //
 
-        [HttpPost("admin/update-data")]
+        [HttpPost("admin/update")]
         public async Task<IActionResult> UpdateAdminData(MemberUpdateInput input, IFormFile? memberImage)
         {
             try

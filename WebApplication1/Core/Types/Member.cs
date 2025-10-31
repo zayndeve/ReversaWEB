@@ -12,7 +12,10 @@ namespace WebApplication1.Models
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; } = string.Empty;
 
+        [MongoDB.Bson.Serialization.Attributes.BsonRepresentation(MongoDB.Bson.BsonType.String)]
         public MemberType MemberType { get; set; } = MemberType.User;
+
+        [MongoDB.Bson.Serialization.Attributes.BsonRepresentation(MongoDB.Bson.BsonType.String)]
         public MemberStatus MemberStatus { get; set; } = MemberStatus.Active;
 
         public string MemberNick { get; set; } = string.Empty;

@@ -1,12 +1,14 @@
 /* === Sidebar === */
 .dashboard-sidebar {
-  position: sticky;
+  position: relative; /* or static */
+  height: auto; /* let it grow naturally */
+  min-height: 100vh; /* still fills viewport if short */
   width: 280px;
   background: linear-gradient(to bottom, #e8f0fe, #e7e3dc);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 100vh;
+
   border-right: 1px solid #ddd7cc;
   padding: 20px 0;
 }
@@ -88,7 +90,6 @@
 .dashboard-navbar {
   width: 100%;
   padding: 0px 40px;
-  background-color: #f9f8f6;
   display: flex;
   justify-content: center;
   border-bottom: 1px solid #e5e3dc;
