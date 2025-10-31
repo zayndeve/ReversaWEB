@@ -1,30 +1,61 @@
 using System;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using WebApplication1.Enums;
 
-namespace ReversaWEB.Core.Types
+namespace WebApplication1.Models
 {
+    // ====== Member Entity ====== //
+    public class Member
+    {
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; } = string.Empty;   // ✅ Mongo ObjectId as string
+
+        public MemberType MemberType { get; set; } = MemberType.User;
+        public MemberStatus MemberStatus { get; set; } = MemberStatus.Active;
+
+        public string MemberNick { get; set; } = string.Empty;
+        public string MemberPhone { get; set; } = string.Empty;
+        public string MemberPassword { get; set; } = string.Empty;
+        public string? MemberAddress { get; set; }
+        public string? MemberDesc { get; set; }
+        public string? MemberImage { get; set; }
+        public int MemberPoints { get; set; } = 0;
+        public string? MemberEmail { get; set; }
+
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+        // 🔐 Password reset fields
+        public string? PasswordResetToken { get; set; }
+        public DateTime? PasswordResetExpires { get; set; }
+    }
+
+    // ====== DTOs (used for requests) ====== //
+
     public class MemberInput
     {
-        public string? MemberType { get; set; }
-        public string? MemberStatus { get; set; }
+        public MemberType? MemberType { get; set; }
+        public MemberStatus? MemberStatus { get; set; }
+
         public string MemberNick { get; set; } = string.Empty;
         public string MemberPhone { get; set; } = string.Empty;
         public string MemberPassword { get; set; } = string.Empty;
 
         public string? MemberAddress { get; set; }
         public string? MemberDesc { get; set; }
-        public string MemberEmail { get; set; } = string.Empty;
+        public string? MemberEmail { get; set; }
         public string? MemberImage { get; set; }
         public int? MemberPoints { get; set; }
-        public string? AuthProvider { get; set; }
     }
 
     public class LoginInput
     {
-        public string? MemberNick { get; set; }
-        public string? MemberPhone { get; set; }
-        public string? MemberEmail { get; set; }
-        public string? MemberPassword { get; set; }
-        public string? AuthProvider { get; set; }
+        public string MemberNick { get; set; } = string.Empty;
+        public string MemberPhone { get; set; } = string.Empty;
+        public string MemberEmail { get; set; } = string.Empty;
+        public string MemberPassword { get; set; } = string.Empty;
     }
 
     public class PasswordResetRequestInput
@@ -36,15 +67,16 @@ namespace ReversaWEB.Core.Types
 
     public class PasswordResetInput
     {
-        public string? MemberNick { get; set; }
-        public string? Token { get; set; }
-        public string? NewPassword { get; set; }
+        public string MemberNick { get; set; } = string.Empty;
+        public string Token { get; set; } = string.Empty;
+        public string NewPassword { get; set; } = string.Empty;
     }
 
     public class MemberUpdateInput
     {
-        public string? Id { get; set; }
-        public string? MemberStatus { get; set; }
+        public string Id { get; set; } = string.Empty; // ✅ now a string (Mongo ObjectId)
+        public MemberStatus? MemberStatus { get; set; }
+
         public string? MemberNick { get; set; }
         public string? MemberPhone { get; set; }
         public string? MemberPassword { get; set; }
@@ -54,35 +86,17 @@ namespace ReversaWEB.Core.Types
         public string? MemberEmail { get; set; }
     }
 
+    // ====== Token Payload (used if you add JWT later) ====== //
     public class MemberTokenPayload
     {
-        public string? Id { get; set; }
-        public string? MemberNick { get; set; }
+        public string Id { get; set; } = string.Empty;
+        public string MemberNick { get; set; } = string.Empty;
         public string? MemberEmail { get; set; }
-        public string? MemberStatus { get; set; }
-        public string? MemberType { get; set; }
+        public MemberStatus MemberStatus { get; set; }
+        public MemberType MemberType { get; set; }
         public string? MemberImage { get; set; }
         public string? MemberAddress { get; set; }
         public string? MemberPhone { get; set; }
         public int? MemberPoints { get; set; }
-    }
-
-    public static class MemberFilter
-    {
-        public static MemberTokenPayload FilterTokenPayload(ReversaWEB.Models.Member member)
-        {
-            return new MemberTokenPayload
-            {
-                Id = member.Id,
-                MemberNick = member.MemberNick,
-                MemberEmail = member.MemberEmail,
-                MemberStatus = member.MemberStatus,
-                MemberType = member.MemberType,
-                MemberImage = member.MemberImage,
-                MemberAddress = member.MemberAddress,
-                MemberPhone = member.MemberPhone,
-                MemberPoints = member.MemberPoints
-            };
-        }
     }
 }

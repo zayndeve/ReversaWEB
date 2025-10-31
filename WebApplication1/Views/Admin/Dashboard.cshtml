@@ -1,0 +1,84 @@
+@{
+  ViewData["Title"] = "Admin Dashboard";
+  Layout = "_Layout"; // optional if you have a shared layout, otherwise null
+}
+
+<!-- ✅ CSS & Fonts -->
+<link rel="stylesheet" href="@Url.Content("~/css/common.css")" />
+<link rel="stylesheet" href="@Url.Content("~/css/dashboard.css")" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
+<body class="dashboard-page">
+  <!-- ======= Main Layout ======= -->
+  <div class="dashboard-layout">
+
+    <!-- ======= Sidebar ======= -->
+    @await Html.PartialAsync("includes/_SideBar")
+
+    <!-- ======= Right Content Area ======= -->
+    <div class="dashboard-content">
+
+      <!-- ======= Navbar / Header ======= -->
+      @await Html.PartialAsync("includes/_Navbar")
+
+      <!-- ======= Main Content ======= -->
+      <div class="dashboard-wrapper">
+        <div class="dashboard-page__main">
+          <div class="dashboard-page__feature-grid">
+
+            <div class="dashboard-page__feature-card card-blue">
+              <h3 class="dashboard-page__feature-title">Products Overview</h3>
+              <p class="dashboard-page__feature-desc">
+                Manage all items in your inventory. Add, remove or update product info.
+                Track categories, quantities and availability.
+              </p>
+            </div>
+
+            <div class="dashboard-page__feature-card card-peach">
+              <h3 class="dashboard-page__feature-title">Billing & Payments</h3>
+              <p class="dashboard-page__feature-desc">
+                Monitor all payment records, pricing plans and transactions.
+                Configure your payment integrations and customer billing details.
+              </p>
+            </div>
+
+            <div class="dashboard-page__feature-card card-mint">
+              <h3 class="dashboard-page__feature-title">User Management</h3>
+              <p class="dashboard-page__feature-desc">
+                View, filter, and control registered users. Assign roles,
+                suspend accounts, and analyze engagement metrics.
+              </p>
+            </div>
+
+            <div class="dashboard-page__feature-card card-mint">
+              <h3 class="dashboard-page__feature-title">Dashboard is Main</h3>
+              <p class="dashboard-page__feature-desc">
+                This is the main page of the dashboard. You can view all the
+                core features and track statistics at a glance.
+              </p>
+            </div>
+
+            <div class="dashboard-page__feature-card card-pink">
+              <h3 class="dashboard-page__feature-title">Settings & Config</h3>
+              <p class="dashboard-page__feature-desc">
+                Adjust platform preferences, configure environment variables,
+                and personalize your admin experience.
+              </p>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======= Scripts ======= -->
+  <script>
+    function confirmLogout(e) {
+      e.preventDefault();
+      if (confirm("Are you sure you want to log out?")) {
+        window.location.href = "/admin/logout?confirmed=true";
+      }
+    }
+  </script>
+</body>

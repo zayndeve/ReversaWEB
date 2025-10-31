@@ -3,26 +3,28 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
-using ReversaWEB.Core.Types;
-using ReversaWEB.Models;
+using WebApplication1.Models;
 
-namespace ReversaWEB.Services
+namespace WebApplication1.Services
 {
     public class AuthService
     {
         private readonly string _secretToken;
-        private readonly int _authTimer; // in hours
+        private readonly int _authTimer; // hours
 
         public AuthService()
         {
-            // You can set this in appsettings.json or environment variable
+            // Load from environment or fallback
             _secretToken = Environment.GetEnvironmentVariable("SECRET_TOKEN")
-    ?? "super_secret_secure_key_12345678901234567890";
-            _authTimer = int.TryParse(Environment.GetEnvironmentVariable("AUTH_TIMER"), out var hours) ? hours : 12;
+                ?? "super_secret_secure_key_12345678901234567890";
+
+            _authTimer = int.TryParse(Environment.GetEnvironmentVariable("AUTH_TIMER"), out var hours)
+                ? hours
+                : 12;
         }
 
         /// <summary>
-        /// Creates a JWT token for the given member.
+        /// Create JWT token for a given member payload.
         /// </summary>
         public string CreateToken(MemberTokenPayload payload)
         {
@@ -31,11 +33,11 @@ namespace ReversaWEB.Services
 
             var claims = new[]
             {
-                new Claim("Id", payload.Id ?? string.Empty),
+                new Claim("Id", payload.Id.ToString()),
                 new Claim("MemberNick", payload.MemberNick ?? string.Empty),
                 new Claim("MemberEmail", payload.MemberEmail ?? string.Empty),
-                new Claim("MemberStatus", payload.MemberStatus ?? string.Empty),
-                new Claim("MemberType", payload.MemberType ?? string.Empty),
+                new Claim("MemberStatus", payload.MemberStatus.ToString()),
+                new Claim("MemberType", payload.MemberType.ToString()),
                 new Claim("MemberImage", payload.MemberImage ?? string.Empty),
                 new Claim("MemberAddress", payload.MemberAddress ?? string.Empty),
                 new Claim("MemberPhone", payload.MemberPhone ?? string.Empty),
@@ -57,7 +59,7 @@ namespace ReversaWEB.Services
         }
 
         /// <summary>
-        /// Verifies and decodes a JWT token, returning the member payload.
+        /// Verify and decode JWT token; return the payload if valid.
         /// </summary>
         public MemberTokenPayload? CheckAuth(string token)
         {
@@ -80,15 +82,22 @@ namespace ReversaWEB.Services
 
                 return new MemberTokenPayload
                 {
-                    Id = jwt.Claims.FirstOrDefault(c => c.Type == "Id")?.Value ?? string.Empty,
+                    Id = Guid.TryParse(jwt.Claims.FirstOrDefault(c => c.Type == "Id")?.Value, out var guid)
+    ? guid.ToString()
+    : string.Empty,
                     MemberNick = jwt.Claims.FirstOrDefault(c => c.Type == "MemberNick")?.Value ?? string.Empty,
                     MemberEmail = jwt.Claims.FirstOrDefault(c => c.Type == "MemberEmail")?.Value,
-                    MemberStatus = jwt.Claims.FirstOrDefault(c => c.Type == "MemberStatus")?.Value ?? "ACTIVE",
-                    MemberType = jwt.Claims.FirstOrDefault(c => c.Type == "MemberType")?.Value ?? "MEMBER",
+                    MemberStatus = Enum.TryParse(jwt.Claims.FirstOrDefault(c => c.Type == "MemberStatus")?.Value, out Enums.MemberStatus status)
+    ? status
+    : Enums.MemberStatus.Active,
+                    MemberType = Enum.TryParse(jwt.Claims.FirstOrDefault(c => c.Type == "MemberType")?.Value, out Enums.MemberType type)
+    ? type
+    : Enums.MemberType.User,
                     MemberImage = jwt.Claims.FirstOrDefault(c => c.Type == "MemberImage")?.Value,
                     MemberAddress = jwt.Claims.FirstOrDefault(c => c.Type == "MemberAddress")?.Value,
                     MemberPhone = jwt.Claims.FirstOrDefault(c => c.Type == "MemberPhone")?.Value,
                     MemberPoints = int.TryParse(jwt.Claims.FirstOrDefault(c => c.Type == "MemberPoints")?.Value, out var pts) ? pts : 0
+
                 };
             }
             catch (Exception ex)

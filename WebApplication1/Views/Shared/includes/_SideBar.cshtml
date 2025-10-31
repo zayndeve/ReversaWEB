@@ -1,0 +1,46 @@
+@*
+  ==========================================
+  _SideBar.cshtml — Razor version of side-bar.ejs
+  ==========================================
+*@
+@{
+  var currentPath = ViewContext.HttpContext.Request.Path.ToString().ToLower();
+}
+
+<div class="dashboard-sidebar">
+  <!-- ===== Sidebar Header ===== -->
+  <div class="sidebar-header">
+    <img src="@Url.Content("~/img/logo.png")" alt="Logo" />
+    <h3>ReVer:So MAKES YOU YOU</h3>
+  </div>
+
+  <!-- ===== Sidebar Navigation ===== -->
+  <nav class="sidebar-nav">
+    <a href="/admin/dashboard" class="nav-item @(currentPath == "/admin/dashboard" ? "active" : "")">
+      <i class="fas fa-house"></i> Dashboard
+    </a>
+
+    <a href="/admin/product/all" class="nav-item @(currentPath == "/admin/product/all" ? "active" : "")">
+      <i class="fas fa-box-open"></i> Products
+    </a>
+
+    <a href="/admin/user/all" class="nav-item @(currentPath == "/admin/user/all" ? "active" : "")">
+      <i class="fas fa-user-group"></i> Users
+    </a>
+
+    <a href="/admin/top-buyers" class="nav-item @(currentPath == "/admin/top-buyers" ? "active" : "")">
+      <i class="fas fa-receipt"></i> Sales Overview
+    </a>
+
+    <a href="/admin/profile" class="nav-item @(currentPath == "/admin/profile" ? "active" : "")">
+      <i class="fas fa-gear"></i> Settings & Profile
+    </a>
+  </nav>
+
+  <!-- ===== Logout Section ===== -->
+  <div class="sidebar-logout">
+    <a href="/admin/logout" class="nav-item" onclick="return confirm('Do you want to logout?')">
+      <i class="fas fa-sign-out-alt"></i> Log out
+    </a>
+  </div>
+</div>

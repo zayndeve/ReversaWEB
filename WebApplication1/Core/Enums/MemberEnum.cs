@@ -1,23 +1,18 @@
-namespace ReversaWEB.Core.Enums
+namespace WebApplication1.Enums
 {
-    // === Type of Member ===
+    // ====== Member Type ====== //
     public enum MemberType
     {
-        MEMBER
+        Admin,   // Was "ADMIN" in the old TS project
+
+        User     // Was "MEMBER" in the old TS project
     }
 
-    // === Account Status ===
+    // ====== Member Status ====== //
     public enum MemberStatus
     {
-        ACTIVE,
-        BLOCKED,
-        DELETED
-    }
-
-    // === Authentication Provider ===
-    public enum AuthProvider
-    {
-        LOCAL,
-
+        Active,   // Was "ACTIVE" in the old TS project
+        Blocked,  // Was "BLOCKED" in the old TS project
+        Deleted   // Was "DELETED" in the old TS project
     }
 }

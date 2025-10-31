@@ -1,179 +1,321 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using MongoDB.Driver;
-using ReversaWEB.Models;
+using MongoDB.Bson;
+using WebApplication1.Models;
+using WebApplication1.Enums;
+using WebApplication1.Exceptions;
+using BCrypt.Net; // BCrypt.Net-Next package
 using System.Security.Cryptography;
 using System.Text;
-using BCrypt.Net;
-using System;
-using System.Threading.Tasks;
-using WebApplication1.Services;
-using ReversaWEB.Core.Types;
 
-
-
-namespace ReversaWEB.Services
+namespace WebApplication1.Services
 {
     public class MemberService
     {
-        private readonly IMongoCollection<Member> _memberCollection;
+        private readonly IMongoCollection<Member> _members;
 
-        public MemberService(MongoDBService db)
+        public MemberService(MongoDBService mongo)
         {
-            _memberCollection = db.GetCollection<Member>("members");
+            _members = mongo.Database.GetCollection<Member>("members");
         }
 
-        //====== SPA ======//
+        // ====== SPA ====== //
 
-        public async Task<Member> Signup(MemberInput input)
+        public async Task<Member> SignupAsync(MemberInput input)
         {
             try
             {
                 // Hash password
-                input.MemberPassword = BCrypt.Net.BCrypt.HashPassword(input.MemberPassword);
+                string salt = BCrypt.Net.BCrypt.GenerateSalt();
+                input.MemberPassword = BCrypt.Net.BCrypt.HashPassword(input.MemberPassword, salt);
 
-                var newMember = new Member
+                var member = new Member
                 {
                     MemberNick = input.MemberNick,
+                    MemberEmail = input.MemberEmail,
                     MemberPhone = input.MemberPhone,
                     MemberPassword = input.MemberPassword,
-                    MemberAddress = input.MemberAddress,
-                    MemberDesc = input.MemberDesc,
-                    MemberEmail = input.MemberEmail ?? string.Empty,
+                    MemberType = input.MemberType ?? MemberType.User,
                     MemberImage = input.MemberImage,
-                    CreatedAt = DateTime.Now,
-                    UpdatedAt = DateTime.Now
+                    MemberStatus = MemberStatus.Active,
+                    MemberPoints = 0,
+                    CreatedAt = DateTime.UtcNow
                 };
 
-                await _memberCollection.InsertOneAsync(newMember);
-                newMember.MemberPassword = "";
-                return newMember;
+                await _members.InsertOneAsync(member);
+                member.MemberPassword = string.Empty;
+                return member;
             }
             catch (MongoWriteException)
             {
-                throw new Exception("Used Nickname or Phone already exists");
+                throw new AppException(HttpCode.BadRequest, ErrorMessage.UsedNickPhone);
+            }
+            catch (Exception ex)
+            {
+                throw new AppException(HttpCode.BadRequest, ErrorMessage.CreateFailed + $" ({ex.Message})");
             }
         }
 
-        public async Task<Member?> Login(LoginInput input)
+        public async Task<Member> LoginAsync(LoginInput input)
         {
             var filter = Builders<Member>.Filter.And(
+                Builders<Member>.Filter.Ne(m => m.MemberStatus, MemberStatus.Deleted),
                 Builders<Member>.Filter.Or(
                     Builders<Member>.Filter.Eq(m => m.MemberNick, input.MemberNick),
                     Builders<Member>.Filter.Eq(m => m.MemberPhone, input.MemberPhone),
                     Builders<Member>.Filter.Eq(m => m.MemberEmail, input.MemberEmail)
-                ),
-                Builders<Member>.Filter.Ne(m => m.MemberStatus, "DELETED")
+                )
             );
 
-            var member = await _memberCollection.Find(filter).FirstOrDefaultAsync();
-            if (member == null)
-                throw new Exception("No member found");
+            var member = await _members.Find(filter).FirstOrDefaultAsync();
 
-            if (member.MemberStatus == "BLOCKED")
-                throw new Exception("Blocked user");
+            if (member == null)
+                throw new AppException(HttpCode.NotFound, ErrorMessage.NoMemberFound);
+
+            if (member.MemberStatus == MemberStatus.Blocked)
+                throw new AppException(HttpCode.Forbidden, ErrorMessage.BlockedUser);
 
             bool isMatch = BCrypt.Net.BCrypt.Verify(input.MemberPassword, member.MemberPassword);
             if (!isMatch)
-                throw new Exception("Invalid credentials");
+                throw new AppException(HttpCode.Unauthorized, ErrorMessage.WrongPassword);
 
             return member;
         }
 
-        public async Task<Member?> UpdateSelf(string memberId, MemberUpdateInput input)
+        public async Task<Member> UpdateSelfAsync(string memberId, MemberUpdateInput input)
         {
-            var filter = Builders<Member>.Filter.Eq(m => m.Id, memberId);
+            var filter = Builders<Member>.Filter.Eq("_id", ObjectId.Parse(memberId));
             var update = Builders<Member>.Update
                 .Set(m => m.MemberNick, input.MemberNick)
-                .Set(m => m.MemberPhone, input.MemberPhone)
-                .Set(m => m.MemberAddress, input.MemberAddress)
-                .Set(m => m.MemberDesc, input.MemberDesc)
                 .Set(m => m.MemberEmail, input.MemberEmail)
+                .Set(m => m.MemberPhone, input.MemberPhone)
                 .Set(m => m.MemberImage, input.MemberImage)
-                .Set(m => m.UpdatedAt, DateTime.Now);
+                .Set(m => m.UpdatedAt, DateTime.UtcNow);
 
-            var options = new FindOneAndUpdateOptions<Member>
-            {
-                ReturnDocument = ReturnDocument.After
-            };
+            var result = await _members.UpdateOneAsync(filter, update);
+            if (result.ModifiedCount == 0)
+                throw new AppException(HttpCode.NotModified, ErrorMessage.UpdateFailed);
 
-            var result = await _memberCollection.FindOneAndUpdateAsync(filter, update, options);
-            if (result == null)
-                throw new Exception("Update failed");
-            return result;
+            return await _members.Find(filter).FirstOrDefaultAsync();
         }
 
-        public async Task<Member?> AddUserPoint(string memberId, int point)
+        public async Task<Member> AddUserPointAsync(string memberId, int point)
         {
             var filter = Builders<Member>.Filter.And(
-                Builders<Member>.Filter.Eq(m => m.Id, memberId),
-                Builders<Member>.Filter.Eq(m => m.MemberStatus, "ACTIVE")
+                Builders<Member>.Filter.Eq("_id", ObjectId.Parse(memberId)),
+                Builders<Member>.Filter.Eq(m => m.MemberStatus, MemberStatus.Active)
             );
 
             var update = Builders<Member>.Update.Inc(m => m.MemberPoints, point);
-            var options = new FindOneAndUpdateOptions<Member>
+            var result = await _members.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<Member>
             {
                 ReturnDocument = ReturnDocument.After
-            };
+            });
 
-            return await _memberCollection.FindOneAndUpdateAsync(filter, update, options);
+            if (result == null)
+                throw new AppException(HttpCode.NotFound, ErrorMessage.NoMemberFound);
+
+            return result;
         }
 
-        //====== PASSWORD RESET ======//
-        public async Task<object> RequestPassword(PasswordResetRequestInput input)
+        // ====== SSR ====== //
+
+        // === Authentication === //
+        public async Task<Member> ProcessSignupAsync(MemberInput input)
         {
-            var filter = Builders<Member>.Filter.Eq(m => m.MemberNick, input.MemberNick);
-            var member = await _memberCollection.Find(filter).FirstOrDefaultAsync();
+            var existingAdmin = await _members.Find(m => m.MemberType == MemberType.Admin).FirstOrDefaultAsync();
+            if (existingAdmin != null)
+                throw new AppException(HttpCode.BadRequest, ErrorMessage.ExistingMemberNick);
+
+            try
+            {
+                string salt = BCrypt.Net.BCrypt.GenerateSalt();
+                input.MemberPassword = BCrypt.Net.BCrypt.HashPassword(input.MemberPassword, salt);
+
+                var member = new Member
+                {
+                    MemberNick = input.MemberNick,
+                    MemberEmail = input.MemberEmail,
+                    MemberPhone = input.MemberPhone,
+                    MemberPassword = input.MemberPassword,
+                    MemberType = MemberType.Admin,
+                    MemberStatus = MemberStatus.Active,
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                await _members.InsertOneAsync(member);
+                member.MemberPassword = string.Empty;
+                return member;
+            }
+            catch (Exception ex)
+            {
+                throw new AppException(HttpCode.BadRequest, ErrorMessage.CreateFailed + $" ({ex.Message})");
+            }
+        }
+
+        public async Task<Member> ProcessLoginAsync(LoginInput input)
+        {
+            var filter = Builders<Member>.Filter.Or(
+                Builders<Member>.Filter.Eq(m => m.MemberNick, input.MemberNick),
+                Builders<Member>.Filter.Eq(m => m.MemberPhone, input.MemberPhone),
+                Builders<Member>.Filter.Eq(m => m.MemberEmail, input.MemberEmail)
+            );
+
+            var member = await _members.Find(filter).FirstOrDefaultAsync();
+
             if (member == null)
-                throw new Exception("No member found");
+                throw new AppException(HttpCode.NotFound, ErrorMessage.NoMemberFound);
 
-            var tokenBytes = RandomNumberGenerator.GetBytes(32);
-            var token = BitConverter.ToString(tokenBytes).Replace("-", "").ToLower();
+            bool isMatch = BCrypt.Net.BCrypt.Verify(input.MemberPassword, member.MemberPassword);
+            if (!isMatch)
+                throw new AppException(HttpCode.Unauthorized, ErrorMessage.WrongPassword);
 
-            var hashedToken = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(token))).ToLower();
-            var expires = DateTimeOffset.Now.AddMinutes(30).ToUnixTimeMilliseconds();
+            if (member.MemberType != MemberType.Admin)
+                throw new AppException(HttpCode.Unauthorized, ErrorMessage.NotAuthenticated);
+
+            return member;
+        }
+
+
+        // ====== Password Reset ====== //
+
+        // ====== Password Reset ====== //
+        public async Task<string> RequestPasswordAsync(PasswordResetRequestInput input)
+        {
+            var member = await _members
+                .Find(m => m.MemberNick == input.MemberNick)
+                .FirstOrDefaultAsync();
+
+            if (member == null)
+                throw new AppException(HttpCode.NotFound, ErrorMessage.NoMemberFound);
+
+            // Generate token
+            var tokenBytes = new byte[32];
+            RandomNumberGenerator.Fill(tokenBytes);
+            var token = Convert.ToHexString(tokenBytes);
+
+            using var sha = SHA256.Create();
+            var hashedToken = Convert.ToHexString(
+                sha.ComputeHash(Encoding.UTF8.GetBytes(token))
+            );
+            var expires = DateTime.UtcNow.AddMinutes(30);
 
             var update = Builders<Member>.Update
                 .Set(m => m.PasswordResetToken, hashedToken)
                 .Set(m => m.PasswordResetExpires, expires);
 
-            await _memberCollection.UpdateOneAsync(filter, update);
+            await _members.UpdateOneAsync(
+                Builders<Member>.Filter.Eq("_id", member.Id),
+                update
+            );
 
-            // You can implement sendResetPasswordEmail() later here
-            Console.WriteLine($"[Email] Reset link for {member.MemberEmail} token={token}");
+            // TODO: integrate email sender (placeholder)
+            Console.WriteLine($"📧 Reset link token for {member.MemberNick}: {token}");
 
-            return new { message = "Reset link sent" };
+            return ErrorMessage.ResetLinkSent;
         }
 
-        public async Task ResetPassword(string token, string newPassword)
+        public async Task ResetPasswordAsync(string token, string newPassword)
         {
-            var hashedToken = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(token))).ToLower();
+            using var sha = SHA256.Create();
+            var hashedToken = Convert.ToHexString(
+                sha.ComputeHash(Encoding.UTF8.GetBytes(token))
+            );
 
             var filter = Builders<Member>.Filter.And(
                 Builders<Member>.Filter.Eq(m => m.PasswordResetToken, hashedToken),
-                Builders<Member>.Filter.Gt(m => m.PasswordResetExpires, DateTimeOffset.Now.ToUnixTimeMilliseconds())
+                Builders<Member>.Filter.Gt(m => m.PasswordResetExpires, DateTime.UtcNow)
             );
 
-            var member = await _memberCollection.Find(filter).FirstOrDefaultAsync();
-            if (member == null)
-                throw new Exception("Invalid or expired token");
+            var member = await _members.Find(filter).FirstOrDefaultAsync();
 
-            member.MemberPassword = BCrypt.Net.BCrypt.HashPassword(newPassword);
-            member.PasswordResetToken = null;
-            member.PasswordResetExpires = null;
+            if (member == null)
+                throw new AppException(HttpCode.BadRequest, ErrorMessage.InvalidOrExpiredToken);
+
+            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(newPassword);
 
             var update = Builders<Member>.Update
-                .Set(m => m.MemberPassword, member.MemberPassword)
+                .Set(m => m.MemberPassword, hashedPassword)
                 .Set(m => m.PasswordResetToken, null)
                 .Set(m => m.PasswordResetExpires, null);
 
-            await _memberCollection.UpdateOneAsync(filter, update);
+            await _members.UpdateOneAsync(
+                Builders<Member>.Filter.Eq("_id", member.Id),
+                update
+            );
         }
 
-        public async Task<Member?> GetById(string id)
+        // ====== Utility ====== //
+        public async Task<Member> GetByIdAsync(string id)
         {
-            var member = await _memberCollection.Find(m => m.Id == id).FirstOrDefaultAsync();
+            var filter = Builders<Member>.Filter.Eq("_id", ObjectId.Parse(id));
+            var member = await _members.Find(filter).FirstOrDefaultAsync();
+
             if (member == null)
-                throw new Exception("No member found");
+                throw new AppException(HttpCode.NotFound, ErrorMessage.NoMemberFound);
+
             return member;
+        }
+
+        // ====== Admin Panel ====== //
+        public async Task<Member> UpdateAdminDataAsync(string memberId, MemberUpdateInput input)
+        {
+            var filter = Builders<Member>.Filter.Eq("_id", ObjectId.Parse(memberId));
+            var found = await _members.Find(filter).FirstOrDefaultAsync();
+
+            if (found == null)
+                throw new AppException(HttpCode.NotFound, ErrorMessage.NoMemberFound);
+
+            var update = Builders<Member>.Update
+                .Set(m => m.MemberNick, input.MemberNick ?? found.MemberNick)
+                .Set(m => m.MemberEmail, input.MemberEmail ?? found.MemberEmail)
+                .Set(m => m.MemberPhone, input.MemberPhone ?? found.MemberPhone)
+                .Set(m => m.MemberImage, input.MemberImage ?? found.MemberImage);
+
+            var result = await _members.UpdateOneAsync(filter, update);
+
+            if (result.ModifiedCount == 0)
+                throw new AppException(HttpCode.NotModified, ErrorMessage.UpdateFailed);
+
+            return await _members.Find(filter).FirstOrDefaultAsync();
+        }
+
+        public async Task<Member> UpdateChosenMemberAsync(MemberUpdateInput input)
+        {
+            var filter = Builders<Member>.Filter.Eq("_id", ObjectId.Parse(input.Id));
+            var found = await _members.Find(filter).FirstOrDefaultAsync();
+
+            if (found == null)
+                throw new AppException(HttpCode.NotFound, ErrorMessage.NoMemberFound);
+
+            if (input.MemberStatus == MemberStatus.Deleted)
+            {
+                await _members.DeleteOneAsync(filter);
+                return new Member { MemberNick = "Deleted Member" };
+            }
+
+            var update = Builders<Member>.Update
+                .Set(m => m.MemberNick, input.MemberNick ?? found.MemberNick)
+                .Set(m => m.MemberEmail, input.MemberEmail ?? found.MemberEmail)
+                .Set(m => m.MemberPhone, input.MemberPhone ?? found.MemberPhone)
+                .Set(m => m.MemberStatus, input.MemberStatus ?? found.MemberStatus);
+
+            await _members.UpdateOneAsync(filter, update);
+
+            return await _members.Find(filter).FirstOrDefaultAsync();
+        }
+
+        public async Task<List<Member>> GetUsersAsync()
+        {
+            var filter = Builders<Member>.Filter.Eq(m => m.MemberType, MemberType.User);
+            var result = await _members.Find(filter).ToListAsync();
+
+            if (result == null || result.Count == 0)
+                throw new AppException(HttpCode.NotFound, ErrorMessage.NoDataFound);
+
+            return result;
         }
     }
 }

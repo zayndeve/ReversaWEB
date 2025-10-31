@@ -1,0 +1,95 @@
+@{
+  ViewData["Title"] = "Admin Signup";
+  Layout = null; // No layout for now (you can add later)
+}
+
+<link rel="stylesheet" href="@Url.Content("~/css/signup.css")" />
+
+<body>
+  <div class="signup-container">
+    <form onsubmit="return validateSignupForm()" action="/admin/signup" method="POST" enctype="multipart/form-data"
+      novalidate>
+      <div class="signup-frame">
+        <h2 class="signup-title">Sign-up</h2>
+
+        <div class="sign-input-group">
+          <div class="sign-up-frame">
+            <label>Admin *</label>
+            <input type="text" name="MemberNick" class="member-nick" autocomplete="new-memberNick"
+              placeholder="Username" required />
+          </div>
+          <div class="sign-up-frame">
+            <label>Phone *</label>
+            <input type="text" name="MemberPhone" class="member-phone" autocomplete="new-password" placeholder="Phone"
+              required />
+          </div>
+          <div class="sign-up-frame">
+            <label>Email *</label>
+            <input type="text" name="MemberEmail" class="member-email" autocomplete="new-email" placeholder="Email"
+              required />
+          </div>
+        </div>
+
+        <div class="sign-input-group">
+          <div class="sign-up-frame">
+            <label>Password *</label>
+            <div class="password-wrapper">
+              <input type="password" name="MemberPassword" class="member-password" placeholder="Password"
+                autocomplete="member-password" required />
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="eye-icon">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke="red" d="M4 4l16 16" class="eye-strike" />
+              </svg>
+            </div>
+          </div>
+
+          <div class="sign-up-frame">
+            <label>Confirmation *</label>
+            <div class="password-wrapper">
+              <input type="password" name="ConfirmPassword" class="confirm-password" placeholder="Password"
+                autocomplete="new-password" required />
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="eye-icon">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke="red" d="M4 4l16 16" class="eye-strike" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="upload-section">
+          <div class="image-preview">
+            <img class="upload-img-frame" src="/img/signup.jpg" alt="User Photo" />
+          </div>
+          <div class="upload-container">
+            <label class="media-text">User photo *</label>
+            <div class="file-box">
+              <input class="upload-name" value="Choose image" disabled />
+              <label for="input-file" class="file-input-label">Upload</label>
+              <input type="file" id="input-file" class="upload-hidden member-image" name="memberImage"
+                accept=".jpg, .jpeg, .png" />
+            </div>
+            <p class="thumbnail-desc">Allowed formats: .jpg, .jpeg, .png.</p>
+
+            <button class="signup-btn" type="submit">Sign-up</button>
+
+            <p class="login-text">
+              Already have an account?
+              <a href="/admin/login" class="login-link">Login</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <p style="color:red;">@TempData["AlertMessage"]</p>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script type="text/javascript" src="/js/signup.js"></script>
+</body>

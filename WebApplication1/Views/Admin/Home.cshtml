@@ -1,0 +1,106 @@
+@{
+  ViewData["Title"] = "Home";
+  Layout = "_Layout"; // or null if this is a standalone landing page
+}
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>@ViewData["Title"] - ReVerso</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- ✅ CSS -->
+  <link rel="stylesheet" href="@Url.Content("~/css/home.css")" />
+
+  <!-- ✅ Tailwind (if not bundled in your CSS) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- ✅ Optional Animations (GSAP) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+</head>
+
+<body class="flex items-center justify-center min-h-screen bg-gray-100">
+
+  <!-- ======= Card Container ======= -->
+  <div class="card-container bg-white shadow-lg">
+
+    <!-- === Admin Panel Card === -->
+    <div class="card bg-blue-500 rounded-2xl h-[300px] w-full top-0 left-0"
+      style="background-image: url('@Url.Content("~/img/adminlogo.jpg")')">
+      <div class="card-content">
+        <div class="card-title">Admin Panel</div>
+        <div class="card-description">
+          Manage and oversee your platform with ease. The admin panel provides
+          a seamless interface for handling users, products, and content. From
+          updating inventory to monitoring user activity — it’s all at your
+          fingertips.
+        </div>
+      </div>
+    </div>
+
+    <!-- === Product Control Card === -->
+    <div class="card bg-teal-600 rounded-2xl border-white h-[295px] w-[282px] top-[302px] left-0.5 bottom-0"
+      style="background-image: url('@Url.Content("~/img/modern.jpg")')">
+      <div class="card-content">
+        <div class="card-title">Product Control</div>
+        <div class="card-description">
+          Effortlessly manage your inventory with the Product Control panel.
+          Add, edit, or remove products with just a few clicks. Track stock
+          levels, update pricing, and organize categories to ensure a smooth
+          shopping experience.
+        </div>
+      </div>
+    </div>
+
+    <!-- === Billing Check Card === -->
+    <div
+      class="card-d3 bg-teal-600 rounded-2xl border-4 hover:border-0 border-white h-[334px] w-[334px] right-0 bottom-0"
+      style="background-image: url('@Url.Content("~/img/product.jpg")')">
+      <div class="card-content">
+        <div class="card-title">Billing Check</div>
+        <div class="card-description">
+          Easily monitor and manage transactions with the Billing Check panel.
+          Track payments, review invoices, and ensure seamless order
+          processing. Stay updated on financial records with a clean and
+          efficient interface.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======= Dual Content Section ======= -->
+  <div class="dual__content flex flex-col items-center gap-4 relative">
+    <img src="@Url.Content("~/img/layer1.svg")" alt="Animated Layer" class="flex gap-4 relative" />
+
+    <div class="button-container">
+      <a href="/admin/signup" class="signup-button">Sign Up</a>
+      <a href="/admin/login" class="login-button">Login</a>
+    </div>
+
+    <!-- === Google Login Button === -->
+    <a href="/auth/google" style="text-decoration: none;">
+      <div style="
+                position: absolute;
+                display: flex;
+                width: 39%;
+                top: 86%;
+                right: 30%;
+                height: 12%;
+                align-items: center;
+                gap: 12px;
+                border: 1px solid #ccc;
+                padding: -2px 14px;
+                border-radius: 22px;
+                background: white;
+                cursor: pointer;">
+        <img src="@Url.Content("~/img/google.svg")" alt="Google Icon"
+          style="width: 30px; height: 31px; margin-left: 5px;" />
+        <span style="color: #555; font-weight: 500;">Sign in with Google</span>
+      </div>
+    </a>
+  </div>
+
+  <!-- ✅ Custom Script -->
+  <script type="module" src="@Url.Content("~/js/home.js")"></script>
+
+</body>

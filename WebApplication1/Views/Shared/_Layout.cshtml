@@ -1,0 +1,65 @@
+@*
+  ===========================================
+  _Layout.cshtml
+  (Unified Header + Layout for Razor)
+  ===========================================
+*@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>@ViewData["Title"] ?? "Reversa Admin"</title>
+
+    <!-- ✅ Favicon -->
+    <link rel="icon" type="image/jpg" href="@Url.Content("~/img/favicon.jpg")" />
+
+    <!-- ✅ Global Styles -->
+    <link rel="stylesheet" href="@Url.Content("~/css/common.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/css/home.css")" />
+
+    <!-- ✅ Bootstrap 5 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+
+    <!-- ✅ FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
+    <!-- ✅ Security Policy -->
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        img-src 'self' data:;
+        font-src 'self' https: data:;
+        style-src 'self' https: 'unsafe-inline';
+        script-src 'self' https: 'unsafe-inline';
+    " />
+
+    @* Page-specific head content (optional) *@
+    @RenderSection("Head", required: false)
+</head>
+
+<body>
+    @* Navbar or sidebar can go here if you want global navigation *@
+    @* @await Html.PartialAsync("includes/_Navbar") *@
+
+    <!-- Main body of each page -->
+    <main role="main">
+        @RenderBody()
+    </main>
+
+    @* Optional footer *@
+    @* @await Html.PartialAsync("includes/_Footer") *@
+
+    <!-- ✅ JS Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <!-- ✅ Global Custom JS -->
+    <script src="@Url.Content("~/js/home.js")"></script>
+
+    @* Page-specific scripts section *@
+    @RenderSection("Scripts", required: false)
+</body>
+
+</html>

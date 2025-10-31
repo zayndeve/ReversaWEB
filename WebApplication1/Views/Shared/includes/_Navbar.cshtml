@@ -1,0 +1,45 @@
+@*
+  ==========================================
+  _Navbar.cshtml — Razor version of navbar.ejs
+  ==========================================
+*@
+@using WebApplication1.Models
+@model Member?
+
+<div class="dashboard-navbar">
+  <div class="dashboard-page__header">
+    <!-- ===== Left Side: Welcome Message ===== -->
+    <div class="header-left">
+      <h2 class="dashboard-page__header-title">
+        Welcome back,
+        <span class="highlighted">
+          @(
+                    Model?.MemberNick ?? "Nick is not defined"
+                    )
+        </span>
+      </h2>
+      <p class="dashboard-page__header-subtext">
+        This is your command center to manage everything in RE:VERSO
+      </p>
+    </div>
+
+    <!-- ===== Right Side: Profile + Support ===== -->
+    <div class="header-right">
+      <div class="admin-profile">
+        @{
+          var profileImage = !string.IsNullOrEmpty(Model?.MemberImage)
+          ? Url.Content("~/uploads/members/" + Model.MemberImage)
+          : Url.Content("~/img/profile.png");
+        }
+        <img src="@profileImage" alt="Avatar" class="avatar-img" />
+        <div>@(Model?.MemberNick ?? "Admin")</div>
+      </div>
+
+      <form action="/admin/admin-support" method="GET">
+        <button class="support-button" type="submit">
+          <i class="fa-solid fa-headset"></i> Support
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
