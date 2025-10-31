@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using WebApplication1.Services;
+using ReversaWEB.Core.Utils;
 using WebApplication1.Models;
 using WebApplication1.Exceptions;
 using WebApplication1.Enums;
@@ -58,7 +59,11 @@ namespace WebApplication1.Controllers
                 _logger.LogInformation("signup");
 
                 if (memberImage != null)
-                    input.MemberImage = memberImage.FileName;
+                {
+                    // save file to wwwroot/uploads/members and store generated filename
+                    var saved = await FileUploader.SaveFileAsync(memberImage, "members");
+                    input.MemberImage = saved;
+                }
 
                 var result = await _memberService.SignupAsync(input);
 
@@ -66,6 +71,8 @@ namespace WebApplication1.Controllers
                 HttpContext.Session.SetString("MemberId", result.Id);
                 HttpContext.Session.SetString("MemberNick", result.MemberNick);
                 HttpContext.Session.SetString("MemberType", result.MemberType.ToString());
+                // store image filename if present so server-side partials can read it
+                HttpContext.Session.SetString("MemberImage", result.MemberImage ?? string.Empty);
 
                 return Created("", new { member = result });
             }
@@ -94,6 +101,7 @@ namespace WebApplication1.Controllers
                 HttpContext.Session.SetString("MemberId", result.Id);
                 HttpContext.Session.SetString("MemberNick", result.MemberNick);
                 HttpContext.Session.SetString("MemberType", result.MemberType.ToString());
+                HttpContext.Session.SetString("MemberImage", result.MemberImage ?? string.Empty);
 
                 return Ok(new { member = result });
             }
@@ -245,10 +253,11 @@ namespace WebApplication1.Controllers
                     });
                 }
 
-                // ✅ Attach image if uploaded
+                // ✅ Attach image if uploaded (save to members folder)
                 if (memberImage != null)
                 {
-                    input.MemberImage = memberImage.FileName;
+                    var saved = await FileUploader.SaveFileAsync(memberImage, "members");
+                    input.MemberImage = saved;
                 }
 
                 // ✅ Update current user

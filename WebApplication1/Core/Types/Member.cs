@@ -10,7 +10,7 @@ namespace WebApplication1.Models
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; } = string.Empty;   // ✅ Mongo ObjectId as string
+        public string Id { get; set; } = string.Empty;
 
         public MemberType MemberType { get; set; } = MemberType.User;
         public MemberStatus MemberStatus { get; set; } = MemberStatus.Active;

@@ -141,6 +141,7 @@ namespace WebApplication1.Services
                     MemberPhone = input.MemberPhone,
                     MemberPassword = input.MemberPassword,
                     MemberType = MemberType.Admin,
+                    MemberImage = input.MemberImage,
                     MemberStatus = MemberStatus.Active,
                     CreatedAt = DateTime.UtcNow
                 };

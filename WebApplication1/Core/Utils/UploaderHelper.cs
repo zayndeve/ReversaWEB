@@ -16,8 +16,8 @@ namespace ReversaWEB.Core.Utils
             if (file == null || file.Length == 0)
                 throw new ArgumentException("File is empty or invalid.");
 
-            // Ensure uploads/<address> directory exists
-            var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "uploads", address);
+            // Ensure wwwroot/uploads/<address> directory exists (so files are served as static assets)
+            var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", address);
             if (!Directory.Exists(uploadPath))
                 Directory.CreateDirectory(uploadPath);
 

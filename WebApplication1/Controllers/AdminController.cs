@@ -180,8 +180,9 @@ namespace WebApplication1.Controllers
                 newMember.MemberType = MemberType.Admin;
                 if (memberImage != null)
                 {
-                    newMember.MemberImage = memberImage.FileName;
-                    // TODO: save image to disk if needed
+                    // save admin image into wwwroot/uploads/members
+                    var saved = await ReversaWEB.Core.Utils.FileUploader.SaveFileAsync(memberImage, "members");
+                    newMember.MemberImage = saved;
                 }
 
                 var result = await _memberService.ProcessSignupAsync(newMember);
@@ -189,6 +190,8 @@ namespace WebApplication1.Controllers
                 // store admin info in session
                 HttpContext.Session.SetString("MemberId", result.Id.ToString());
                 HttpContext.Session.SetString("MemberNick", result.MemberNick ?? "Admin");
+                // store image name in session if present
+                HttpContext.Session.SetString("MemberImage", result.MemberImage ?? string.Empty);
 
                 // simulate alert + redirect
                 TempData["AlertMessage"] = "✅ Signup successful! Please log in.";
@@ -219,6 +222,8 @@ namespace WebApplication1.Controllers
                 // store admin info
                 HttpContext.Session.SetString("MemberId", result.Id.ToString());
                 HttpContext.Session.SetString("MemberNick", result.MemberNick ?? "Admin");
+                // store image name so navbar can show avatar
+                HttpContext.Session.SetString("MemberImage", result.MemberImage ?? string.Empty);
 
                 await HttpContext.Session.CommitAsync();
 
@@ -308,7 +313,8 @@ namespace WebApplication1.Controllers
 
                 if (memberImage != null)
                 {
-                    input.MemberImage = memberImage.FileName; // or save to server if needed
+                    var saved = await ReversaWEB.Core.Utils.FileUploader.SaveFileAsync(memberImage, "members");
+                    input.MemberImage = saved; // saved filename stored
                 }
 
                 // ✅ get current logged-in member from session as STRING
