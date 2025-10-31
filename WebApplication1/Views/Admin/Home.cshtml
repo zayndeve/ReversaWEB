@@ -1,32 +1,24 @@
 @{
   ViewData["Title"] = "Home";
-  Layout = "_Layout"; // or null if this is a standalone landing page
+  Layout = "_Layout"; // view will render inside the shared layout
 }
 
-<head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>@ViewData["Title"] - ReVerso</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <!-- ✅ CSS -->
-  <link rel="stylesheet" href="@Url.Content("~/css/home.css")" />
-
-  <!-- ✅ Tailwind (if not bundled in your CSS) -->
+@section Head {
+  <!-- Page-specific head scripts (Tailwind & GSAP) -->
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- ✅ Optional Animations (GSAP) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-</head>
+}
 
-<body class="flex items-center justify-center min-h-screen bg-gray-100">
+<!-- Wrap the page content in a container div so we keep the original body classes
+  while allowing the layout to own the real <body> element. -->
+<div class="home-root flex items-center justify-center min-h-screen bg-gray-100">
 
   <!-- ======= Card Container ======= -->
   <div class="card-container bg-white shadow-lg">
 
     <!-- === Admin Panel Card === -->
     <div class="card bg-blue-500 rounded-2xl h-[300px] w-full top-0 left-0"
-      style="background-image: url('@Url.Content("~/img/adminlogo.jpg")')">
+      style="background-image: url('@Url.Content("~/img/adminlogo.jpg")'); background-repeat: no-repeat; background-size: cover; background-position: center; z-index: 10;">
       <div class="card-content">
         <div class="card-title">Admin Panel</div>
         <div class="card-description">
@@ -39,8 +31,8 @@
     </div>
 
     <!-- === Product Control Card === -->
-    <div class="card bg-teal-600 rounded-2xl border-white h-[295px] w-[282px] top-[302px] left-0.5 bottom-0"
-      style="background-image: url('@Url.Content("~/img/modern.jpg")')">
+    <div class="card bg-teal-600 rounded-2xl border-white h-[400px] w-[300px]  left-0.5 bottom-0"
+      style="background-image: url('@Url.Content("~/img/modern.jpg")'); background-repeat: no-repeat; background-size: cover; background-position: center; z-index: 12;">
       <div class="card-content">
         <div class="card-title">Product Control</div>
         <div class="card-description">
@@ -55,7 +47,7 @@
     <!-- === Billing Check Card === -->
     <div
       class="card-d3 bg-teal-600 rounded-2xl border-4 hover:border-0 border-white h-[334px] w-[334px] right-0 bottom-0"
-      style="background-image: url('@Url.Content("~/img/product.jpg")')">
+      style="background-image: url('@Url.Content("~/img/product.jpg")'); background-repeat: no-repeat; background-size: cover; background-position: center; z-index: 11;">
       <div class="card-content">
         <div class="card-title">Billing Check</div>
         <div class="card-description">
@@ -66,6 +58,7 @@
         </div>
       </div>
     </div>
+
   </div>
 
   <!-- ======= Dual Content Section ======= -->
@@ -78,29 +71,11 @@
     </div>
 
     <!-- === Google Login Button === -->
-    <a href="/auth/google" style="text-decoration: none;">
-      <div style="
-                position: absolute;
-                display: flex;
-                width: 39%;
-                top: 86%;
-                right: 30%;
-                height: 12%;
-                align-items: center;
-                gap: 12px;
-                border: 1px solid #ccc;
-                padding: -2px 14px;
-                border-radius: 22px;
-                background: white;
-                cursor: pointer;">
-        <img src="@Url.Content("~/img/google.svg")" alt="Google Icon"
-          style="width: 30px; height: 31px; margin-left: 5px;" />
-        <span style="color: #555; font-weight: 500;">Sign in with Google</span>
-      </div>
-    </a>
+
   </div>
 
-  <!-- ✅ Custom Script -->
-  <script type="module" src="@Url.Content("~/js/home.js")"></script>
+</div>
 
-</body>
+@section Scripts {
+  <!-- Note: home.js is already included in _Layout; avoid duplicating it here. -->
+}

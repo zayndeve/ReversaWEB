@@ -1,8 +1,16 @@
+/* Support when the home view is rendered inside the shared layout: apply the same
+   root layout rules to a `.home-root` wrapper so styles don't depend on the
+   document <body> being the page root. */
+.home-root,
 body {
+  /* Layout: place the main panels side-by-side on wide screens */
   display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 48px;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
   background: linear-gradient(to right, #4a90e2, #37b24d);
   font-family: Arial, sans-serif;
 }
@@ -11,8 +19,14 @@ body {
   position: relative;
   height: 600px;
   width: 600px;
+  flex-direction: column;
   overflow: hidden;
   border-radius: 16px;
+}
+
+/* Ensure the left panel keeps its size when inside the body flex row */
+.card-container {
+  flex: 0 0 600px;
 }
 
 .card {
@@ -103,23 +117,44 @@ body {
   max-height: 100px;
 }
 .dual__content {
-  width: 500px;
-  height: 400px;
+  /* Make the right-side box a fixed-size panel that sits beside the card container */
+  width: 420px;
+  max-width: 45vw;
+  height: 420px;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  margin-top: 25px;
-  margin-right: 50px;
-  margin-left: 130px;
+  gap: 16px;
   background: rgba(255, 255, 255, 0.2);
-  border-radius: 60px;
+  border-radius: 28px;
+  padding: 20px;
+  box-sizing: border-box;
 }
 .dual__content img {
   width: 250px;
   height: 250px;
   margin-top: 10px;
+}
 
-  margin-left: 10px;
+/* Responsive: stack vertically on narrower screens */
+@media (max-width: 850px) {
+  body {
+    flex-direction: column;
+    gap: 24px;
+    padding: 24px;
+  }
+
+  .card-container,
+  .dual__content {
+    width: 100%;
+    max-width: 900px;
+    height: auto;
+  }
+
+  .card-container {
+    height: auto;
+  }
 }
 .button-container {
   display: flex;
