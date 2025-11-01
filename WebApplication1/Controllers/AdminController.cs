@@ -155,16 +155,29 @@ namespace WebApplication1.Controllers
             try
             {
                 _logger.LogInformation("getUsers");
-                var result = await _memberService.GetUsersAsync(); // implement this in service
+
+                var users = await _memberService.GetUsersAsync();
                 ViewData["CurrentPath"] = "/admin/user/all";
-                return View("Users", result);
+
+                if (users == null || !users.Any())
+                {
+                    _logger.LogWarning("No users found in database.");
+                    TempData["AlertType"] = "warning";
+                    TempData["AlertMessage"] = "⚠️ No users found in the system.";
+                    return View("Users", new List<Member>()); // ✅ empty list, no redirect
+                }
+
+                return View("Users", users);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error GetUsers");
+
                 TempData["AlertType"] = "danger";
-                TempData["AlertMessage"] = "❌ Unable to load users.";
-                return RedirectToAction("GetLogin", "Admin");
+                TempData["AlertMessage"] = "❌ Unable to load users due to a server error.";
+
+                // ❌ Instead of redirecting to login, stay on the Users page gracefully
+                return View("Users", new List<Member>());
             }
         }
 
@@ -181,7 +194,7 @@ namespace WebApplication1.Controllers
             {
                 _logger.LogError(ex, "Error AdminSupportPage");
                 TempData["AlertType"] = "danger";
-                TempData["AlertMessage"] = "❌ Unable to open support page.";
+                TempData["AlertMessage"] = " Unable to open support page.";
                 return RedirectToAction("GetDashboard", "Admin");
             }
         }
@@ -212,7 +225,7 @@ namespace WebApplication1.Controllers
                 HttpContext.Session.SetString("MemberImage", result.MemberImage ?? string.Empty);
 
                 // simulate alert + redirect
-                TempData["AlertMessage"] = "✅ Signup successful! Please log in.";
+                TempData["AlertMessage"] = " Signup successful! Please log in.";
                 return RedirectToAction("GetLogin", "Admin");
             }
             catch (Exception ex)
@@ -394,6 +407,19 @@ namespace WebApplication1.Controllers
             try
             {
                 _logger.LogInformation("updateChosenMember");
+
+                if (input == null)
+                {
+                    _logger.LogWarning("UpdateChosenMember called with null input");
+                    return BadRequest(new { success = false, message = "Missing request body" });
+                }
+
+                if (string.IsNullOrEmpty(input.Id))
+                {
+                    _logger.LogWarning("UpdateChosenMember called without Id");
+                    return BadRequest(new { success = false, message = "Missing member Id" });
+                }
+
                 var result = await _memberService.UpdateChosenMemberAsync(input);
                 return Ok(new { success = true, data = result });
             }
@@ -473,7 +499,7 @@ namespace WebApplication1.Controllers
                 // var kpis = await _analyticsService.GetKPIAsync();
                 // var monthlySales = await _analyticsService.GetMonthlySalesAsync();
                 // var topCategories = await _analyticsService.GetTopCategoriesAsync();
-                var topBuyers = await _analyticsService.GetTopBuyersAsync();
+                var topBuyers = await _memberService.GetTopBuyersAsync();
 
                 // _logger.LogInformation("monthlySales: {@MonthlySales}", monthlySales);
                 // _logger.LogInformation("topCategories: {@TopCategories}", topCategories);
@@ -489,7 +515,7 @@ namespace WebApplication1.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "❌ Analytics Dashboard Error");
+                _logger.LogError(ex, "Analytics Dashboard Error");
                 return RedirectToAction("GetDashboard", "Admin");
             }
         }

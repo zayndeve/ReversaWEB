@@ -70,7 +70,8 @@
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/compressed/5c38v6vcvy-7jg2jx41ik.gz
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/compressed/j8p4ubh9m9-ry0jhqsvfa.gz
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/compressed/ut2owmvmdy-iu0filno1w.gz
-/Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/compressed/zm96xy3oxq-qorj0l7gyu.gz
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/compressed/dg8uo91myk-9r0fnvszui.gz
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/compressed/nzmdndmkw3-vopzr5b14t.gz
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/compressed/d051cyf2gk-222sqlerl0.gz
+/Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/compressed/zm96xy3oxq-56w3pbfv3y.gz
+/Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/compressed/buj4g67kqd-o0bpljgx89.gz

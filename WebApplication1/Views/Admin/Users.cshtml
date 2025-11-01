@@ -1,0 +1,107 @@
+@model List<WebApplication1.Models.Member>
+@{
+    ViewData["Title"] = "Users List";
+    Layout = "_Layout";
+}
+
+<!-- ✅ Styles -->
+<link rel="stylesheet" href="@Url.Content("~/css/common.css")" />
+<link rel="stylesheet" href="@Url.Content("~/css/user.css")" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
+<div class="dashboard-page">
+    <div class="dashboard-layout">
+
+        <!-- Sidebar -->
+        @await Html.PartialAsync("includes/_SideBar", model: null)
+
+        <!-- Main Content -->
+        <div class="dashboard-content">
+            @await Html.PartialAsync("includes/_Navbar", model: null)
+
+            <!-- Topbar -->
+            <div class="users-topbar">
+                <h2>Users List</h2>
+                <div class="search-bar">
+                    <input type="text" id="user-search" placeholder="Search by name, phone or email" />
+                    <i class="fas fa-search"></i>
+                </div>
+            </div>
+
+            <!-- ✅ Alert Message -->
+            @if (TempData["AlertMessage"] != null)
+            {
+                var type = TempData["AlertType"]?.ToString() ?? "info";
+                var icon = type switch
+                {
+                    "success" => "bi-check-circle-fill text-success",
+                    "danger" => "bi-x-circle-fill text-danger",
+                    "warning" => "bi-exclamation-triangle-fill text-warning",
+                    _ => "bi-info-circle-fill text-info"
+                };
+
+                <div class="alert alert-@type d-flex align-items-center justify-content-center fade show mt-3" role="alert"
+                    style="font-weight:500;border-radius:10px;">
+                    <i class="@icon fs-4 me-2"></i>
+                    <span>@TempData["AlertMessage"]</span>
+                </div>
+            }
+
+            <!-- Users Table -->
+            <div class="users-table-container mt-3">
+                @if (Model != null && Model.Count > 0)
+                {
+                    <table class="users-table">
+                        <thead>
+                            <tr>
+                                <th>Nickname</th>
+                                <th>Phone</th>
+                                <th>Email</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-table-body">
+                            @foreach (var member in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="user-name-wrapper">
+                                            <img src="@Url.Content("~/uploads/members/" + (string.IsNullOrEmpty(member.MemberImage) ? "img/adminlogo.jpg" : member.MemberImage))"
+                                                alt="Profile" class="member-thumb" />
+                                            <span>@member.MemberNick</span>
+                                        </div>
+                                    </td>
+                                    <td>@member.MemberPhone</td>
+                                    <td>@member.MemberEmail</td>
+                                    <td>
+                                        <select class="member-status-btn @(member.MemberStatus.ToString().ToLower())"
+                                            data-id="@member.Id">
+                                            <option value="Active" @(member.MemberStatus ==
+                                                                                                           WebApplication1.Enums.MemberStatus.Active ? "selected" : "")>Active</option>
+                                            <option value="Blocked" @(member.MemberStatus ==
+                                                                                                            WebApplication1.Enums.MemberStatus.Blocked ? "selected" : "")>Blocked</option>
+                                            <option value="Deleted" @(member.MemberStatus ==
+                                                                                                            WebApplication1.Enums.MemberStatus.Deleted ? "selected" : "")>Deleted</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <!-- 🎨 Friendly Empty State -->
+                    <div class="empty-users-state" style="text-align:center; padding:80px 0;">
+                        <img src="@Url.Content("~/img/empty-users.svg")" alt="No Users"
+                            style="width:120px; opacity:0.8; margin-bottom:20px;" />
+                        <h3 style="font-weight:600; color:#444;">No users yet </h3>
+                        <p style="color:#888; font-size:15px;">Start adding members to see them listed here.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="@Url.Content("~/js/user.js")"></script>

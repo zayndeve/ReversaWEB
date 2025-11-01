@@ -1,6 +1,10 @@
 using Microsoft.AspNetCore.Http;
 using WebApplication1.Services;
 using WebApplication1.Core.Utils;
+using System.Text.Json.Serialization;
+using System.Text.Json;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +17,8 @@ builder.Services.AddControllersWithViews()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+
     });
 
 // === Enable OpenAPI/Swagger (optional) === //

@@ -315,7 +315,26 @@ namespace WebApplication1.Services
 
         public async Task<Member> UpdateChosenMemberAsync(MemberUpdateInput input)
         {
-            var filter = Builders<Member>.Filter.Eq("_id", ObjectId.Parse(input.Id));
+            if (input == null)
+                throw new AppException(HttpCode.BadRequest, "Request body is missing");
+
+            if (string.IsNullOrEmpty(input.Id))
+                throw new AppException(HttpCode.BadRequest, "Member Id is required");
+
+            ObjectId oid;
+            try
+            {
+                oid = ObjectId.Parse(input.Id);
+            }
+            catch (Exception ex)
+            {
+                throw new AppException(HttpCode.BadRequest, "Invalid member Id format: " + ex.Message);
+            }
+
+            if (_members == null)
+                throw new AppException(HttpCode.InternalServerError, "Members collection is not initialized");
+
+            var filter = Builders<Member>.Filter.Eq("_id", oid);
             var found = await _members.Find(filter).FirstOrDefaultAsync();
 
             if (found == null)
@@ -347,6 +366,32 @@ namespace WebApplication1.Services
                 throw new AppException(HttpCode.NotFound, ErrorMessage.NoDataFound);
 
             return result;
+        }
+
+        // ====== Analytics: Top Buyers ====== //
+        public async Task<List<object>> GetTopBuyersAsync()
+        {
+            // For now, return top 5 active users as dummy top buyers
+            // In a real implementation, this would aggregate from orders/orderitems
+            var filter = Builders<Member>.Filter.And(
+                Builders<Member>.Filter.Eq(m => m.MemberType, MemberType.User),
+                Builders<Member>.Filter.Eq(m => m.MemberStatus, MemberStatus.Active)
+            );
+
+            var topMembers = await _members.Find(filter).Limit(5).ToListAsync();
+
+            var buyers = new List<object>();
+            foreach (var member in topMembers)
+            {
+                buyers.Add(new
+                {
+                    nickname = member.MemberNick,
+                    totalSpentFormatted = "₩0", // Placeholder
+                    lastPurchaseFormatted = member.UpdatedAt.ToShortDateString() // Placeholder
+                });
+            }
+
+            return buyers;
         }
     }
 }
