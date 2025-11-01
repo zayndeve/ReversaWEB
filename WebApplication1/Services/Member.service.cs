@@ -15,10 +15,12 @@ namespace WebApplication1.Services
     public class MemberService
     {
         private readonly IMongoCollection<Member> _members;
+        private readonly WebApplication1.Core.Utils.EmailHelper _emailHelper;
 
-        public MemberService(MongoDBService mongo)
+        public MemberService(MongoDBService mongo, WebApplication1.Core.Utils.EmailHelper emailHelper)
         {
             _members = mongo.Database.GetCollection<Member>("members");
+            _emailHelper = emailHelper ?? throw new ArgumentNullException(nameof(emailHelper));
         }
 
         // ====== SPA ====== //
@@ -214,8 +216,16 @@ namespace WebApplication1.Services
                 update
             );
 
-            // TODO: integrate email sender (placeholder)
-            Console.WriteLine($"📧 Reset link token for {member.MemberNick}: {token}");
+            // Send reset link via EmailHelper (will fallback to console if SMTP not configured)
+            try
+            {
+                await _emailHelper.SendResetPasswordEmailAsync(member.MemberEmail ?? string.Empty, member.MemberNick, token);
+            }
+            catch (Exception ex)
+            {
+                // Keep existing behavior for visibility but don't fail the request because of email issues
+                Console.Error.WriteLine($"[MemberService] Failed to send reset email: {ex.Message}");
+            }
 
             return ErrorMessage.ResetLinkSent;
         }

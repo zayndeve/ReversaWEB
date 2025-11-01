@@ -9,7 +9,6 @@
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/bin/Debug/net9.0/appsettings.Development.json
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/bin/Debug/net9.0/appsettings.json
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/bin/Debug/net9.0/WebApplication1.staticwebassets.endpoints.json
-/Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/bin/Debug/net9.0/WebApplication1
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/bin/Debug/net9.0/WebApplication1.deps.json
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/bin/Debug/net9.0/WebApplication1.runtimeconfig.json
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/bin/Debug/net9.0/WebApplication1.dll
@@ -54,7 +53,6 @@
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/WebApplication1.RazorAssemblyInfo.cache
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/WebApplication1.RazorAssemblyInfo.cs
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/compressed/zg4bcwajl4-s46i8e5wpu.gz
-/Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/compressed/d051cyf2gk-sus4olk4b4.gz
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/compressed/0ozlq0y1p1-185wgx4apn.gz
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/compressed/87wud5rj38-5h2sc4vbpu.gz
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/compressed/wavr7rgoq2-ew1j2cwv6j.gz
@@ -75,3 +73,4 @@
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/compressed/zm96xy3oxq-qorj0l7gyu.gz
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/compressed/dg8uo91myk-9r0fnvszui.gz
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/compressed/nzmdndmkw3-vopzr5b14t.gz
+/Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/compressed/d051cyf2gk-222sqlerl0.gz

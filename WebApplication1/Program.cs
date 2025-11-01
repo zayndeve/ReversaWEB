@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using WebApplication1.Services;
+using WebApplication1.Core.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,8 @@ builder.Services.AddSingleton<MongoDBService>();
 builder.Services.AddSingleton<MemberService>();
 builder.Services.AddSingleton<AuthService>();
 builder.Services.AddSingleton<AnalyticsService>();
+// Email helper (uses MongoDBService internally)
+builder.Services.AddSingleton<EmailHelper>();
 
 // === Enable session support === //
 builder.Services.AddDistributedMemoryCache();
