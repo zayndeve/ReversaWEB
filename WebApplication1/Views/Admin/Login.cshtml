@@ -1,92 +1,122 @@
 @{
-  ViewData["Title"] = "Admin Login";
-  Layout = null; // optional if you don't have a shared layout yet
+    ViewData["Title"] = "Admin Login";
+    Layout = null; // optional if you don't have a shared layout yet
 }
 
 <!-- ✅ CSS -->
 <link rel="stylesheet" type="text/css" href="@Url.Content("~/css/login.css")" />
 
 <body>
-  <!-- Password request form (optional, keep if needed) -->
-  <form class="login-container" action="/admin/request-password" method="POST">
-    <!-- your form contents -->
-  </form>
+    <!-- Password request form (optional, keep if needed) -->
+    <form class="login-container" action="/admin/request-password" method="POST">
+        <!-- your form contents -->
+    </form>
 
-  <!-- Main login form -->
-  <form class="login-container" action="/admin/login" method="POST" novalidate>
-    <div class="login-frame">
-      <div class="login-top">
-        <img src="@Url.Content("~/img/profile.png")" alt="Login Illustration" class="login-icon" />
-        <h2>Login</h2>
-      </div>
+    <!-- Main login form -->
+    <form class="login-container" action="/admin/login" method="POST" novalidate>
+        <div class="login-frame">
+            <div class="login-top">
+                <img src="@Url.Content("~/img/profile.png")" alt="Login Illustration" class="login-icon" />
+                <h2>Login</h2>
+            </div>
 
-      <div class="login-input-frame">
-        <!-- Login method dropdown -->
-        <div class="login-input-container">
-          <label for="loginType">Login with *</label>
-          <select id="loginType" class="login-type-dropdown" onchange="switchLoginInput()">
-            <option value="memberNick">Nickname</option>
-            <option value="memberPhone">Phone</option>
-            <option value="memberEmail">Email</option>
-          </select>
-        </div>
+            <div class="login-input-frame">
+                <!-- Login method dropdown -->
+                <div class="login-input-container">
+                    <label for="loginType">Login with *</label>
+                    <select id="loginType" class="login-type-dropdown" onchange="switchLoginInput()">
+                        <option value="memberNick">Nickname</option>
+                        <option value="memberPhone">Phone</option>
+                        <option value="memberEmail">Email</option>
+                    </select>
+                </div>
 
-        <!-- Input field (name changed dynamically by JS) -->
-        <div class="login-input-container">
-          <input type="text" id="loginInput" name="memberNick" class="member-nick" autocomplete="off"
-            placeholder="Enter your nickname" required />
-        </div>
+                <!-- Input field (name changed dynamically by JS) -->
+                <div class="login-input-container">
+                    <input type="text" id="loginInput" name="memberNick" class="member-nick" autocomplete="off"
+                        placeholder="Enter your nickname" required />
+                </div>
 
-        <!-- Password -->
-        <div class="login-input-container">
-          <label>Password *</label>
-          <div class="password-wrapper">
-            <input type="password" name="memberPassword" class="member-password" placeholder="Password"
-              autocomplete="member-password" required />
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-              stroke="currentColor" class="eye-icon">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke="red" d="M4 4l16 16" class="eye-strike" />
-            </svg>
-          </div>
-        </div>
-      </div>
+                <!-- Password -->
+                <div class="login-input-container">
+                    <label>Password *</label>
+                    <div class="password-wrapper">
+                        <input type="password" name="memberPassword" class="member-password" placeholder="Password"
+                            autocomplete="member-password" required />
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="eye-icon">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke="red" d="M4 4l16 16"
+                                class="eye-strike" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
 
-      <button class="login-btn" type="submit">Login</button>
+            <button class="login-btn" type="submit">Login</button>
+          @if (TempData["AlertMessage"] != null)
+{
+    var type = TempData["AlertType"]?.ToString() ?? "info";
+    var icon = type switch
+    {
+        "success" => "bi-check-circle-fill text-success",
+        "danger"  => "bi-x-circle-fill text-danger",
+        "warning" => "bi-exclamation-triangle-fill text-warning",
+        _         => "bi-info-circle-fill text-info"
+    };
 
-      <p class="signup-text">
-        Do not have an account? <a href="/admin/signup">Sign-up</a>
-      </p>
-      <p>
-        <a href="/admin/request-password" style="text-decoration: underline">
-          Forgot your password?
-        </a>
-      </p>
+    var (bgColor, textColor) = type switch
+    {
+        "success" => ("#ecfdf5", "#166534"),   // green tones
+        "danger"  => ("#fef2f2", "#991b1b"),   // red tones
+        "warning" => ("#fffbeb", "#854d0e"),   // yellow tones
+        _         => ("#eff6ff", "#1e3a8a")    // blue tones
+    };
+
+    <div class="alert alert-@type d-flex align-items-center justify-content-center fade show mt-3"
+         role="alert"
+         style=$"font-weight:500; border-radius:10px; background-color:{bgColor}; color:{textColor};
+                 box-shadow:0 2px 6px rgba(0,0,0,0.08); padding:12px 18px;">
+        <i class="@icon fs-4 me-2"></i>
+        <span>@TempData["AlertMessage"]</span>
     </div>
-  </form>
+}
 
-  <p style="color:red;">@TempData["AlertMessage"]</p>
 
-  <!-- ✅ JS -->
-  <script>
-    function switchLoginInput() {
-      const loginType = document.getElementById("loginType").value;
-      const loginInput = document.getElementById("loginInput");
+            <p class="signup-text">
+                Do not have an account? <a href="/admin/signup">Sign-up</a>
+            </p>
+            <p>
+                <a href="/admin/request-password" style="text-decoration: underline">
+                    Forgot your password?
+                </a>
+            </p>
+        </div>
+    </form>
 
-      loginInput.name = loginType;
 
-      if (loginType === "memberNick") {
-        loginInput.placeholder = "Enter your nickname";
-      } else if (loginType === "memberPhone") {
-        loginInput.placeholder = "Enter your phone number";
-      } else if (loginType === "memberEmail") {
-        loginInput.placeholder = "Enter your email address";
-      }
-    }
-  </script>
 
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="@Url.Content("~/js/login.js")"></script>
+    <!-- ✅ JS -->
+    <script>
+        function switchLoginInput() {
+            const loginType = document.getElementById("loginType").value;
+            const loginInput = document.getElementById("loginInput");
+
+            loginInput.name = loginType;
+
+            if (loginType === "memberNick") {
+                loginInput.placeholder = "Enter your nickname";
+            } else if (loginType === "memberPhone") {
+                loginInput.placeholder = "Enter your phone number";
+            } else if (loginType === "memberEmail") {
+                loginInput.placeholder = "Enter your email address";
+            }
+        }
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="@Url.Content("~/js/login.js")"></script>
 </body>

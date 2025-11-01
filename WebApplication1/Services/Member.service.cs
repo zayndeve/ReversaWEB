@@ -204,15 +204,16 @@ namespace WebApplication1.Services
             using var sha = SHA256.Create();
             var hashedToken = Convert.ToHexString(
                 sha.ComputeHash(Encoding.UTF8.GetBytes(token))
-            );
+            ).ToLowerInvariant(); // normalize casing to avoid case-mismatch
             var expires = DateTime.UtcNow.AddMinutes(30);
 
             var update = Builders<Member>.Update
                 .Set(m => m.PasswordResetToken, hashedToken)
                 .Set(m => m.PasswordResetExpires, expires);
 
+            // Use ObjectId when filtering by _id to avoid type mismatches
             await _members.UpdateOneAsync(
-                Builders<Member>.Filter.Eq("_id", member.Id),
+                Builders<Member>.Filter.Eq("_id", ObjectId.Parse(member.Id)),
                 update
             );
 
@@ -235,8 +236,9 @@ namespace WebApplication1.Services
             using var sha = SHA256.Create();
             var hashedToken = Convert.ToHexString(
                 sha.ComputeHash(Encoding.UTF8.GetBytes(token))
-            );
+            ).ToLowerInvariant();
 
+            // Look up by token and ensure expiry still valid (UTC)
             var filter = Builders<Member>.Filter.And(
                 Builders<Member>.Filter.Eq(m => m.PasswordResetToken, hashedToken),
                 Builders<Member>.Filter.Gt(m => m.PasswordResetExpires, DateTime.UtcNow)
@@ -245,19 +247,35 @@ namespace WebApplication1.Services
             var member = await _members.Find(filter).FirstOrDefaultAsync();
 
             if (member == null)
-                throw new AppException(HttpCode.BadRequest, ErrorMessage.InvalidOrExpiredToken);
+            {
+                // Debug fallback to show what's actually stored
+                var byToken = await _members
+                    .Find(Builders<Member>.Filter.Eq(m => m.PasswordResetToken, hashedToken))
+                    .FirstOrDefaultAsync();
 
+                if (byToken != null)
+                {
+                    Console.WriteLine($"[DEBUG] Token matched but expired. Stored expiry (UTC): {byToken.PasswordResetExpires:o}");
+                }
+                throw new AppException(HttpCode.BadRequest, ErrorMessage.InvalidOrExpiredToken);
+            }
+
+            // ✅ Hash the new password
             var hashedPassword = BCrypt.Net.BCrypt.HashPassword(newPassword);
 
+            // ✅ Update using ObjectId.Parse to avoid string/ObjectId mismatch
             var update = Builders<Member>.Update
                 .Set(m => m.MemberPassword, hashedPassword)
                 .Set(m => m.PasswordResetToken, null)
-                .Set(m => m.PasswordResetExpires, null);
+                .Set(m => m.PasswordResetExpires, null)
+                .Set(m => m.UpdatedAt, DateTime.Now);
 
             await _members.UpdateOneAsync(
-                Builders<Member>.Filter.Eq("_id", member.Id),
+                Builders<Member>.Filter.Eq("_id", ObjectId.Parse(member.Id)),
                 update
             );
+
+            Console.WriteLine($"[MemberService] ✅ Password successfully reset for {member.MemberNick}");
         }
 
         // ====== Utility ====== //

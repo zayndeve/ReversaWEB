@@ -32,6 +32,7 @@ namespace WebApplication1.Models
 
         // 🔐 Password reset fields
         public string? PasswordResetToken { get; set; }
+        [MongoDB.Bson.Serialization.Attributes.BsonDateTimeOptions(Kind = DateTimeKind.Utc)]
         public DateTime? PasswordResetExpires { get; set; }
     }
 

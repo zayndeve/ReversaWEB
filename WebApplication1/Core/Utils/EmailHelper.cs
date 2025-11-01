@@ -56,8 +56,8 @@ namespace WebApplication1.Core.Utils
 
                 // Default links match the legacy project (change if you want configurable hosts)
                 var resetLink = isAdmin
-                    ? $"http://localhost:5001/admin/reset-password/{token}"
-                    : $"http://localhost:3000/reset-password/{token}";
+     ? $"http://localhost:5251/admin/reset-password/{token}"
+     : $"http://localhost:5251/member/reset-password/{token}";
 
                 Console.WriteLine($"[EmailHelper] Prepared reset link: {resetLink}");
 

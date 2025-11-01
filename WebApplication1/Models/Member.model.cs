@@ -50,7 +50,9 @@ namespace ReversaWEB.Models
         public string? PasswordResetToken { get; set; }
 
         [BsonElement("passwordResetExpires")]
-        public long? PasswordResetExpires { get; set; }
+        [BsonDateTimeOptions(Kind = DateTimeKind.Utc)]
+        public DateTime? PasswordResetExpires { get; set; }
+
 
         [BsonElement("authProvider")]
         public string AuthProvider { get; set; } = "LOCAL";

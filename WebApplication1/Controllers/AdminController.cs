@@ -35,7 +35,9 @@ namespace WebApplication1.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error GetUpdateAdmin");
-                return RedirectToAction("Dashboard", "Admin");
+                TempData["AlertType"] = "danger";
+                TempData["AlertMessage"] = "❌ Failed to load profile page.";
+                return RedirectToAction("GetDashboard", "Admin");
             }
         }
 
@@ -51,7 +53,9 @@ namespace WebApplication1.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error GoHome");
-                return RedirectToAction("Index", "Admin");
+                TempData["AlertType"] = "danger";
+                TempData["AlertMessage"] = "❌ Unable to open home page.";
+                return RedirectToAction("GetLogin", "Admin");
             }
         }
 
@@ -66,7 +70,9 @@ namespace WebApplication1.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error GetSignup");
-                return RedirectToAction("Index", "Admin");
+                TempData["AlertType"] = "danger";
+                TempData["AlertMessage"] = "❌ Unable to open signup page.";
+                return RedirectToAction("GetLogin", "Admin");
             }
         }
 
@@ -81,7 +87,9 @@ namespace WebApplication1.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error GetLogin");
-                return RedirectToAction("Index", "Admin");
+                TempData["AlertType"] = "danger";
+                TempData["AlertMessage"] = "❌ Unable to open login page.";
+                return RedirectToAction("GoHome", "Admin");
             }
         }
 
@@ -97,6 +105,8 @@ namespace WebApplication1.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error loading dashboard");
+                TempData["AlertType"] = "danger";
+                TempData["AlertMessage"] = "❌ Unable to load dashboard.";
                 return RedirectToAction("GetLogin", "Admin");
             }
         }
@@ -113,6 +123,8 @@ namespace WebApplication1.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error GetRequestPassword");
+                TempData["AlertType"] = "danger";
+                TempData["AlertMessage"] = "❌ Unable to open password request page.";
                 return RedirectToAction("GoHome", "Admin");
             }
         }
@@ -130,7 +142,9 @@ namespace WebApplication1.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error GetResetPassword");
-                return RedirectToAction("GetLogin", "Admin");
+                TempData["AlertType"] = "danger";
+                TempData["AlertMessage"] = "❌ Unable to open reset password page.";
+                return RedirectToAction("GetRequestPassword", "Admin");
             }
         }
 
@@ -148,6 +162,8 @@ namespace WebApplication1.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error GetUsers");
+                TempData["AlertType"] = "danger";
+                TempData["AlertMessage"] = "❌ Unable to load users.";
                 return RedirectToAction("GetLogin", "Admin");
             }
         }
@@ -164,6 +180,8 @@ namespace WebApplication1.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error AdminSupportPage");
+                TempData["AlertType"] = "danger";
+                TempData["AlertMessage"] = "❌ Unable to open support page.";
                 return RedirectToAction("GetDashboard", "Admin");
             }
         }
@@ -233,7 +251,9 @@ namespace WebApplication1.Controllers
             {
                 _logger.LogError(ex, "Error ProcessLogin");
                 var message = ex is AppException ? ex.Message : "Something went wrong.";
-                TempData["AlertMessage"] = message;
+                // Error example
+                TempData["AlertType"] = "danger";
+                TempData["AlertMessage"] = "No member found with that nickname.";
                 return RedirectToAction("GetLogin", "Admin");
             }
         }
@@ -245,16 +265,29 @@ namespace WebApplication1.Controllers
             try
             {
                 _logger.LogInformation("requestPassword");
+
                 var result = await _memberService.RequestPasswordAsync(input);
 
-                // render RequestPassword view with result data
-                return View("RequestPassword", new { Result = new { result, Error = false } });
+
+                TempData["AlertType"] = "success";
+                TempData["AlertMessage"] = "A password reset link has been sent to your registered email address.";
+                return RedirectToAction("GetRequestPassword");
+            }
+            catch (AppException ex)
+            {
+                _logger.LogWarning(ex, "Handled app error in RequestPassword");
+
+                TempData["AlertType"] = "danger";
+                TempData["AlertMessage"] = ex.Message; // e.g. "No member found"
+                return RedirectToAction("GetRequestPassword");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error RequestPassword");
-                var message = ex is AppException ? ex.Message : "Something went wrong.";
-                return View("RequestPassword", new { Result = new { Message = message, Error = true } });
+                _logger.LogError(ex, "Unhandled error in RequestPassword");
+
+                TempData["AlertType"] = "danger";
+                TempData["AlertMessage"] = "Something went wrong while sending the reset link. Please try again.";
+                return RedirectToAction("GetRequestPassword");
             }
         }
 
@@ -263,18 +296,29 @@ namespace WebApplication1.Controllers
         {
             try
             {
-                _logger.LogInformation("resetPassword");
-                _logger.LogInformation("Token: {Token}, NewPassword: {Password}", token, newPassword);
+                _logger.LogInformation("resetPassword: Token={Token}", token);
 
                 await _memberService.ResetPasswordAsync(token, newPassword);
 
-                return View("Login");
+                TempData["AlertType"] = "success";
+                TempData["AlertMessage"] = "Your password has been successfully reset. You can now log in.";
+                return RedirectToAction("GetLogin");
+            }
+            catch (AppException ex)
+            {
+                _logger.LogWarning(ex, "Handled app error in ResetPassword");
+
+                TempData["AlertType"] = "danger";
+                TempData["AlertMessage"] = ex.Message; // e.g. "Token expired"
+                return RedirectToAction("GetResetPassword", new { token });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error ResetPassword");
-                var message = ex is AppException ? ex.Message : "Something went wrong.";
-                return Content($"<script>alert('{message}');</script>", "text/html");
+                _logger.LogError(ex, "Unhandled error in ResetPassword");
+
+                TempData["AlertType"] = "danger";
+                TempData["AlertMessage"] = "An unexpected error occurred. Please try again.";
+                return RedirectToAction("GetResetPassword", new { token });
             }
         }
 
