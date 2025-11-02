@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using WebApplication1.Services;
-using ReversaWEB.Core.Utils;
+using WebApplication1.Core.Utils;
 using WebApplication1.Models;
 using WebApplication1.Exceptions;
 using WebApplication1.Enums;

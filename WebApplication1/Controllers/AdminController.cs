@@ -4,6 +4,7 @@ using WebApplication1.Services; // your service folder
 using WebApplication1.Models;
 using WebApplication1.Enums;   // for DTOs and enums if needed
 using WebApplication1.Exceptions;
+using WebApplication1.Core.Utils;
 
 namespace WebApplication1.Controllers
 {
@@ -212,7 +213,7 @@ namespace WebApplication1.Controllers
                 if (memberImage != null)
                 {
                     // save admin image into wwwroot/uploads/members
-                    var saved = await ReversaWEB.Core.Utils.FileUploader.SaveFileAsync(memberImage, "members");
+                    var saved = await WebApplication1.Core.Utils.FileUploader.SaveFileAsync(memberImage, "members");
                     newMember.MemberImage = saved;
                 }
 
@@ -370,7 +371,7 @@ namespace WebApplication1.Controllers
 
                 if (memberImage != null)
                 {
-                    var saved = await ReversaWEB.Core.Utils.FileUploader.SaveFileAsync(memberImage, "members");
+                    var saved = await WebApplication1.Core.Utils.FileUploader.SaveFileAsync(memberImage, "members");
                     input.MemberImage = saved; // saved filename stored
                 }
 

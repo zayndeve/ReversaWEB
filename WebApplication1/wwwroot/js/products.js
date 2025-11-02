@@ -69,14 +69,21 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   const toggleBtn = document.getElementById("toggleForm");
+  const toggleBtnEmpty = document.getElementById("toggleFormEmpty");
   const cancelBtn = document.getElementById("cancelForm");
   const formContainer = document.getElementById("formContainer");
   const form = document.querySelector(".product-form"); // ✅ You need this
 
+  const showForm = () => {
+    formContainer.scrollIntoView({ behavior: "smooth" });
+  };
+
   if (toggleBtn && formContainer) {
-    toggleBtn.onclick = () => {
-      formContainer.scrollIntoView({ behavior: "smooth" });
-    };
+    toggleBtn.onclick = showForm;
+  }
+
+  if (toggleBtnEmpty && formContainer) {
+    toggleBtnEmpty.onclick = showForm;
   }
 
   if (cancelBtn && form && formContainer) {
@@ -107,7 +114,7 @@ document.querySelectorAll(".product-status-btn").forEach((dropdown) => {
     const newStatus = this.value;
     const productId = this.id;
 
-    fetch(`/admin/product/${productId}`, {
+    fetch(`/api/product/update/${productId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -9,14 +9,14 @@ namespace WebApplication1.Services
         // private readonly IMongoCollection<Order> _orders;
         // private readonly IMongoCollection<OrderItem> _orderItems;
         private readonly IMongoCollection<Member> _members;
-        // private readonly IMongoCollection<Product> _products;
+        private readonly IMongoCollection<Product> _products;
 
         public AnalyticsService(MongoDBService mongo)
         {
             // _orders = mongo.Database.GetCollection<Order>("orders");
             // _orderItems = mongo.Database.GetCollection<OrderItem>("orderitems");
             _members = mongo.Database.GetCollection<Member>("members");
-            // _products = mongo.Database.GetCollection<Product>("products");
+            _products = mongo.Database.GetCollection<Product>("products");
         }
 
         // ===== KPI ===== //

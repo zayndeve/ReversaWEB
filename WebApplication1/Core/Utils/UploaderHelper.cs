@@ -3,7 +3,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace ReversaWEB.Core.Utils
+namespace WebApplication1.Core.Utils
 {
     public static class FileUploader
     {
