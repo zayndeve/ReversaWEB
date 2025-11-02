@@ -14,18 +14,18 @@ namespace WebApplication1.Services
 {
     public class MemberService
     {
-        private readonly IMongoCollection<Member> _members;
+        private readonly IMongoCollection<WebApplication1.Models.Member> _members;
         private readonly WebApplication1.Core.Utils.EmailHelper _emailHelper;
 
         public MemberService(MongoDBService mongo, WebApplication1.Core.Utils.EmailHelper emailHelper)
         {
-            _members = mongo.Database.GetCollection<Member>("members");
+            _members = mongo.Database.GetCollection<WebApplication1.Models.Member>("members");
             _emailHelper = emailHelper ?? throw new ArgumentNullException(nameof(emailHelper));
         }
 
         // ====== SPA ====== //
 
-        public async Task<Member> SignupAsync(MemberInput input)
+        public async Task<WebApplication1.Models.Member> SignupAsync(WebApplication1.Types.MemberInput input)
         {
             try
             {
@@ -33,10 +33,10 @@ namespace WebApplication1.Services
                 string salt = BCrypt.Net.BCrypt.GenerateSalt();
                 input.MemberPassword = BCrypt.Net.BCrypt.HashPassword(input.MemberPassword, salt);
 
-                var member = new Member
+                var member = new WebApplication1.Models.Member
                 {
                     MemberNick = input.MemberNick,
-                    MemberEmail = input.MemberEmail,
+                    MemberEmail = input.MemberEmail ?? string.Empty,
                     MemberPhone = input.MemberPhone,
                     MemberPassword = input.MemberPassword,
                     // Always create regular users via the public signup endpoint.
@@ -62,15 +62,15 @@ namespace WebApplication1.Services
             }
         }
 
-        public async Task<Member> LoginAsync(LoginInput input)
+        public async Task<WebApplication1.Models.Member> LoginAsync(WebApplication1.Types.LoginInput input)
         {
-            var filter = Builders<Member>.Filter.And(
-                Builders<Member>.Filter.Ne(m => m.MemberStatus, MemberStatus.Deleted),
-                Builders<Member>.Filter.Or(
-                    Builders<Member>.Filter.Eq(m => m.MemberNick, input.MemberNick),
-                    Builders<Member>.Filter.Eq(m => m.MemberPhone, input.MemberPhone),
-                    Builders<Member>.Filter.Eq(m => m.MemberEmail, input.MemberEmail)
-                )
+            var filter = Builders<WebApplication1.Models.Member>.Filter.And(
+                Builders<WebApplication1.Models.Member>.Filter.Or(
+                    Builders<WebApplication1.Models.Member>.Filter.Eq(m => m.MemberNick, input.MemberNick),
+                    Builders<WebApplication1.Models.Member>.Filter.Eq(m => m.MemberPhone, input.MemberPhone),
+                    Builders<WebApplication1.Models.Member>.Filter.Eq(m => m.MemberEmail, input.MemberEmail)
+                ),
+                Builders<WebApplication1.Models.Member>.Filter.Ne(m => m.MemberStatus, MemberStatus.Deleted)
             );
 
             var member = await _members.Find(filter).FirstOrDefaultAsync();
@@ -88,10 +88,10 @@ namespace WebApplication1.Services
             return member;
         }
 
-        public async Task<Member> UpdateSelfAsync(string memberId, MemberUpdateInput input)
+        public async Task<WebApplication1.Models.Member> UpdateSelfAsync(string memberId, WebApplication1.Types.MemberUpdateInput input)
         {
-            var filter = Builders<Member>.Filter.Eq("_id", ObjectId.Parse(memberId));
-            var update = Builders<Member>.Update
+            var filter = Builders<WebApplication1.Models.Member>.Filter.Eq("_id", ObjectId.Parse(memberId));
+            var update = Builders<WebApplication1.Models.Member>.Update
                 .Set(m => m.MemberNick, input.MemberNick)
                 .Set(m => m.MemberEmail, input.MemberEmail)
                 .Set(m => m.MemberPhone, input.MemberPhone)
@@ -107,12 +107,12 @@ namespace WebApplication1.Services
 
         public async Task<Member> AddUserPointAsync(string memberId, int point)
         {
-            var filter = Builders<Member>.Filter.And(
-                Builders<Member>.Filter.Eq("_id", ObjectId.Parse(memberId)),
-                Builders<Member>.Filter.Eq(m => m.MemberStatus, MemberStatus.Active)
+            var filter = Builders<WebApplication1.Models.Member>.Filter.And(
+                Builders<WebApplication1.Models.Member>.Filter.Eq("_id", ObjectId.Parse(memberId)),
+                Builders<WebApplication1.Models.Member>.Filter.Eq(m => m.MemberStatus, MemberStatus.Active)
             );
 
-            var update = Builders<Member>.Update.Inc(m => m.MemberPoints, point);
+            var update = Builders<WebApplication1.Models.Member>.Update.Inc(m => m.MemberPoints, point);
             var result = await _members.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<Member>
             {
                 ReturnDocument = ReturnDocument.After
@@ -127,7 +127,7 @@ namespace WebApplication1.Services
         // ====== SSR ====== //
 
         // === Authentication === //
-        public async Task<Member> ProcessSignupAsync(MemberInput input)
+        public async Task<WebApplication1.Models.Member> ProcessSignupAsync(WebApplication1.Types.MemberInput input)
         {
             var existingAdmin = await _members.Find(m => m.MemberType == MemberType.Admin).FirstOrDefaultAsync();
             if (existingAdmin != null)
@@ -138,10 +138,10 @@ namespace WebApplication1.Services
                 string salt = BCrypt.Net.BCrypt.GenerateSalt();
                 input.MemberPassword = BCrypt.Net.BCrypt.HashPassword(input.MemberPassword, salt);
 
-                var member = new Member
+                var member = new WebApplication1.Models.Member
                 {
                     MemberNick = input.MemberNick,
-                    MemberEmail = input.MemberEmail,
+                    MemberEmail = input.MemberEmail ?? string.Empty,
                     MemberPhone = input.MemberPhone,
                     MemberPassword = input.MemberPassword,
                     MemberType = MemberType.Admin,
@@ -160,12 +160,12 @@ namespace WebApplication1.Services
             }
         }
 
-        public async Task<Member> ProcessLoginAsync(LoginInput input)
+        public async Task<WebApplication1.Models.Member> ProcessLoginAsync(WebApplication1.Types.LoginInput input)
         {
-            var filter = Builders<Member>.Filter.Or(
-                Builders<Member>.Filter.Eq(m => m.MemberNick, input.MemberNick),
-                Builders<Member>.Filter.Eq(m => m.MemberPhone, input.MemberPhone),
-                Builders<Member>.Filter.Eq(m => m.MemberEmail, input.MemberEmail)
+            var filter = Builders<WebApplication1.Models.Member>.Filter.Or(
+                Builders<WebApplication1.Models.Member>.Filter.Eq(m => m.MemberNick, input.MemberNick),
+                Builders<WebApplication1.Models.Member>.Filter.Eq(m => m.MemberPhone, input.MemberPhone),
+                Builders<WebApplication1.Models.Member>.Filter.Eq(m => m.MemberEmail, input.MemberEmail)
             );
 
             var member = await _members.Find(filter).FirstOrDefaultAsync();
@@ -187,7 +187,7 @@ namespace WebApplication1.Services
         // ====== Password Reset ====== //
 
         // ====== Password Reset ====== //
-        public async Task<string> RequestPasswordAsync(PasswordResetRequestInput input)
+        public async Task<string> RequestPasswordAsync(WebApplication1.Types.PasswordResetRequestInput input)
         {
             var member = await _members
                 .Find(m => m.MemberNick == input.MemberNick)
@@ -207,13 +207,13 @@ namespace WebApplication1.Services
             ).ToLowerInvariant(); // normalize casing to avoid case-mismatch
             var expires = DateTime.UtcNow.AddMinutes(30);
 
-            var update = Builders<Member>.Update
+            var update = Builders<WebApplication1.Models.Member>.Update
                 .Set(m => m.PasswordResetToken, hashedToken)
                 .Set(m => m.PasswordResetExpires, expires);
 
             // Use ObjectId when filtering by _id to avoid type mismatches
             await _members.UpdateOneAsync(
-                Builders<Member>.Filter.Eq("_id", ObjectId.Parse(member.Id)),
+                Builders<WebApplication1.Models.Member>.Filter.Eq("_id", ObjectId.Parse(member.Id)),
                 update
             );
 
@@ -239,9 +239,9 @@ namespace WebApplication1.Services
             ).ToLowerInvariant();
 
             // Look up by token and ensure expiry still valid (UTC)
-            var filter = Builders<Member>.Filter.And(
-                Builders<Member>.Filter.Eq(m => m.PasswordResetToken, hashedToken),
-                Builders<Member>.Filter.Gt(m => m.PasswordResetExpires, DateTime.UtcNow)
+            var filter = Builders<WebApplication1.Models.Member>.Filter.And(
+                Builders<WebApplication1.Models.Member>.Filter.Eq(m => m.PasswordResetToken, hashedToken),
+                Builders<WebApplication1.Models.Member>.Filter.Gt(m => m.PasswordResetExpires, DateTime.UtcNow)
             );
 
             var member = await _members.Find(filter).FirstOrDefaultAsync();
@@ -250,7 +250,7 @@ namespace WebApplication1.Services
             {
                 // Debug fallback to show what's actually stored
                 var byToken = await _members
-                    .Find(Builders<Member>.Filter.Eq(m => m.PasswordResetToken, hashedToken))
+                    .Find(Builders<WebApplication1.Models.Member>.Filter.Eq(m => m.PasswordResetToken, hashedToken))
                     .FirstOrDefaultAsync();
 
                 if (byToken != null)
@@ -291,7 +291,7 @@ namespace WebApplication1.Services
         }
 
         // ====== Admin Panel ====== //
-        public async Task<Member> UpdateAdminDataAsync(string memberId, MemberUpdateInput input)
+        public async Task<WebApplication1.Models.Member> UpdateAdminDataAsync(string memberId, WebApplication1.Types.MemberUpdateInput input)
         {
             var filter = Builders<Member>.Filter.Eq("_id", ObjectId.Parse(memberId));
             var found = await _members.Find(filter).FirstOrDefaultAsync();
@@ -313,7 +313,7 @@ namespace WebApplication1.Services
             return await _members.Find(filter).FirstOrDefaultAsync();
         }
 
-        public async Task<Member> UpdateChosenMemberAsync(MemberUpdateInput input)
+        public async Task<WebApplication1.Models.Member> UpdateChosenMemberAsync(WebApplication1.Types.MemberUpdateInput input)
         {
             if (input == null)
                 throw new AppException(HttpCode.BadRequest, "Request body is missing");
@@ -357,9 +357,9 @@ namespace WebApplication1.Services
             return await _members.Find(filter).FirstOrDefaultAsync();
         }
 
-        public async Task<List<Member>> GetUsersAsync()
+        public async Task<List<WebApplication1.Models.Member>> GetUsersAsync()
         {
-            var filter = Builders<Member>.Filter.Eq(m => m.MemberType, MemberType.User);
+            var filter = Builders<WebApplication1.Models.Member>.Filter.Eq(m => m.MemberType, MemberType.User);
             var result = await _members.Find(filter).ToListAsync();
 
             if (result == null || result.Count == 0)
@@ -373,9 +373,9 @@ namespace WebApplication1.Services
         {
             // For now, return top 5 active users as dummy top buyers
             // In a real implementation, this would aggregate from orders/orderitems
-            var filter = Builders<Member>.Filter.And(
-                Builders<Member>.Filter.Eq(m => m.MemberType, MemberType.User),
-                Builders<Member>.Filter.Eq(m => m.MemberStatus, MemberStatus.Active)
+            var filter = Builders<WebApplication1.Models.Member>.Filter.And(
+                Builders<WebApplication1.Models.Member>.Filter.Eq(m => m.MemberType, MemberType.User),
+                Builders<WebApplication1.Models.Member>.Filter.Eq(m => m.MemberStatus, MemberStatus.Active)
             );
 
             var topMembers = await _members.Find(filter).Limit(5).ToListAsync();

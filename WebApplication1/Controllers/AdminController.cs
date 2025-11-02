@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using WebApplication1.Services; // your service folder
 using WebApplication1.Models;
+using WebApplication1.Types;
 using WebApplication1.Enums;   // for DTOs and enums if needed
 using WebApplication1.Exceptions;
 using WebApplication1.Core.Utils;
@@ -165,7 +166,7 @@ namespace WebApplication1.Controllers
                     _logger.LogWarning("No users found in database.");
                     TempData["AlertType"] = "warning";
                     TempData["AlertMessage"] = "⚠️ No users found in the system.";
-                    return View("Users", new List<Member>()); // ✅ empty list, no redirect
+                    return View("Users", new List<WebApplication1.Models.Member>()); // ✅ empty list, no redirect
                 }
 
                 return View("Users", users);
@@ -178,7 +179,7 @@ namespace WebApplication1.Controllers
                 TempData["AlertMessage"] = "❌ Unable to load users due to a server error.";
 
                 // ❌ Instead of redirecting to login, stay on the Users page gracefully
-                return View("Users", new List<Member>());
+                return View("Users", new List<WebApplication1.Models.Member>());
             }
         }
 
@@ -220,7 +221,7 @@ namespace WebApplication1.Controllers
                 var result = await _memberService.ProcessSignupAsync(newMember);
 
                 // store admin info in session
-                HttpContext.Session.SetString("MemberId", result.Id.ToString());
+                HttpContext.Session.SetString("MemberId", result.Id?.ToString() ?? "");
                 HttpContext.Session.SetString("MemberNick", result.MemberNick ?? "Admin");
                 // store image name in session if present
                 HttpContext.Session.SetString("MemberImage", result.MemberImage ?? string.Empty);
@@ -252,7 +253,7 @@ namespace WebApplication1.Controllers
                 HttpContext.Session.Clear();
 
                 // store admin info
-                HttpContext.Session.SetString("MemberId", result.Id.ToString());
+                HttpContext.Session.SetString("MemberId", result.Id?.ToString() ?? "");
                 HttpContext.Session.SetString("MemberNick", result.MemberNick ?? "Admin");
                 // store image name so navbar can show avatar
                 HttpContext.Session.SetString("MemberImage", result.MemberImage ?? string.Empty);
@@ -497,20 +498,20 @@ namespace WebApplication1.Controllers
         {
             try
             {
-                // var kpis = await _analyticsService.GetKPIAsync();
-                // var monthlySales = await _analyticsService.GetMonthlySalesAsync();
-                // var topCategories = await _analyticsService.GetTopCategoriesAsync();
-                var topBuyers = await _memberService.GetTopBuyersAsync();
+                var kpis = await _analyticsService.GetKPIAsync();
+                var monthlySales = await _analyticsService.GetMonthlySalesAsync();
+                var topCategories = await _analyticsService.GetTopCategoriesAsync();
+                var topBuyers = await _analyticsService.GetTopBuyersAsync();
 
-                // _logger.LogInformation("monthlySales: {@MonthlySales}", monthlySales);
-                // _logger.LogInformation("topCategories: {@TopCategories}", topCategories);
-                // _logger.LogInformation("topBuyers: {@TopBuyers}", topBuyers);
+                _logger.LogInformation("monthlySales: {@MonthlySales}", monthlySales);
+                _logger.LogInformation("topCategories: {@TopCategories}", topCategories);
+                _logger.LogInformation("topBuyers: {@TopBuyers}", topBuyers);
 
                 return View("TopBuyers", new
                 {
-                    // kpis,
-                    // monthlySales,
-                    // topCategories,
+                    kpis,
+                    monthlySales,
+                    topCategories,
                     topBuyers
                 });
             }

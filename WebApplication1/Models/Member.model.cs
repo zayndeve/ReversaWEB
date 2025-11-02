@@ -1,8 +1,9 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System;
+using WebApplication1.Enums;
 
-namespace ReversaWEB.Models
+namespace WebApplication1.Models
 {
     [BsonIgnoreExtraElements]
     public class Member
@@ -12,10 +13,12 @@ namespace ReversaWEB.Models
         public string? Id { get; set; }
 
         [BsonElement("memberType")]
-        public string MemberType { get; set; } = "MEMBER";
+        [BsonRepresentation(BsonType.String)]
+        public MemberType MemberType { get; set; } = MemberType.User;
 
         [BsonElement("memberStatus")]
-        public string MemberStatus { get; set; } = "ACTIVE";
+        [BsonRepresentation(BsonType.String)]
+        public MemberStatus MemberStatus { get; set; } = MemberStatus.Active;
 
         [BsonElement("memberNick")]
         [BsonRequired]

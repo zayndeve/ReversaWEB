@@ -76,3 +76,7 @@
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/ref/WebApplication1.dll
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/compressed/7rfflyn80c-iiyztg82w0.gz
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/compressed/0fcahwvts4-dtrgd454zf.gz
+/Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/bin/Debug/net9.0/Newtonsoft.Json.dll
+/Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/bin/Debug/net9.0/Stripe.net.dll
+/Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/bin/Debug/net9.0/System.Configuration.ConfigurationManager.dll
+/Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/bin/Debug/net9.0/System.Security.Cryptography.ProtectedData.dll

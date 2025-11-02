@@ -3,7 +3,7 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using WebApplication1.Enums;
 
-namespace WebApplication1.Models
+namespace WebApplication1.Types
 {
     // ====== Member Entity ====== //
     public class Member

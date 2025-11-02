@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using WebApplication1.Services;
 using WebApplication1.Core.Utils;
 using WebApplication1.Models;
+using WebApplication1.Types;
 using WebApplication1.Exceptions;
 using WebApplication1.Enums;
 
