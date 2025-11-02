@@ -49,7 +49,6 @@
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/compressed/nzmdndmkw3-vopzr5b14t.gz
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/compressed/87wud5rj38-5h2sc4vbpu.gz
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/compressed/wavr7rgoq2-ew1j2cwv6j.gz
-/Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/compressed/0fcahwvts4-yhnse8mtf4.gz
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/compressed/74gvudrpty-pny1n9cif5.gz
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/compressed/9h4vlfkkvg-bjdo5xj836.gz
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/compressed/31g89qc3yl-pob8lu43hp.gz
@@ -76,3 +75,4 @@
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/WebApplication1.genruntimeconfig.cache
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/ref/WebApplication1.dll
 /Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/compressed/7rfflyn80c-iiyztg82w0.gz
+/Users/ziynatilloh/Desktop/Personal projects/ReversaWEB/WebApplication1/obj/Debug/net9.0/compressed/0fcahwvts4-dtrgd454zf.gz

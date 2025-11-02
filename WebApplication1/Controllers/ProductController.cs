@@ -173,6 +173,7 @@ namespace WebApplication1.Controllers
             try
             {
                 Console.WriteLine("CreateNewProduct");
+                Console.WriteLine("LeftCount: " + model.ProductLeftCount);
                 Console.WriteLine("Files count: " + (productImages?.Count ?? 0));
 
                 if (productImages == null || productImages.Count == 0)
@@ -189,19 +190,14 @@ namespace WebApplication1.Controllers
 
                 await _productService.CreateNewProduct(model);
 
-                return Content(
-                    "<script>alert('✅ Successful creation!'); window.location.replace('/admin/product/all');</script>",
-                    "text/html"
-                );
+                TempData["SuccessMessage"] = "Product created successfully!";
+                return Redirect("/admin/product/all");
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error, CreateNewProduct: " + ex.Message);
-                var message = "Product creation failed.";
-                return Content(
-                    $"<script>alert('{message}'); window.location.replace('/admin/product/all');</script>",
-                    "text/html"
-                );
+                TempData["ErrorMessage"] = "Product creation failed. Please try again.";
+                return Redirect("/admin/product/all");
             }
         }
 

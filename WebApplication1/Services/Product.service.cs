@@ -224,6 +224,10 @@ namespace WebApplication1.Services
                     ProductImages = input.ProductImages ?? new List<string>(),
                     ProductTags = input.ProductTags ?? new List<ProductTag>(),
                     ProductStatus = ProductStatus.PROCESS,
+                    ProductGender = input.ProductGender,
+                    ProductLeftCount = input.ProductLeftCount,
+                    ProductSize = input.ProductSize.GetValueOrDefault(),
+                    ProductRating = input.ProductRating.GetValueOrDefault(),
                     CreatedAt = DateTime.UtcNow
                 });
 

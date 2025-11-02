@@ -19,6 +19,22 @@
         <!-- Main Content -->
         <div class="dashboard-content">
             @await Html.PartialAsync("includes/_Navbar", model: null)
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="success-message">
+                    <i class="fas fa-check-circle"></i>
+                    @TempData["SuccessMessage"]
+                </div>
+            }
+
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="error-message">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    @TempData["ErrorMessage"]
+                </div>
+            }
             <div class="products-topbar">
                 <h2>Products List</h2>
                 <form class="search-bar">
