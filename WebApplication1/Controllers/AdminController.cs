@@ -166,7 +166,7 @@ namespace WebApplication1.Controllers
                     _logger.LogWarning("No users found in database.");
                     TempData["AlertType"] = "warning";
                     TempData["AlertMessage"] = "⚠️ No users found in the system.";
-                    return View("Users", new List<WebApplication1.Models.Member>()); // ✅ empty list, no redirect
+                    return View("Users", new List<WebApplication1.Models.Member>()); //  empty list, no redirect
                 }
 
                 return View("Users", users);
@@ -376,7 +376,7 @@ namespace WebApplication1.Controllers
                     input.MemberImage = saved; // saved filename stored
                 }
 
-                // ✅ get current logged-in member from session as STRING
+                //  get current logged-in member from session as STRING
                 string? memberId = HttpContext.Session.GetString("MemberId");
 
                 if (string.IsNullOrEmpty(memberId))
@@ -384,10 +384,10 @@ namespace WebApplication1.Controllers
                     return StatusCode(400, new { success = false, message = "Missing member ID in session" });
                 }
 
-                // ✅ pass it directly as string (no Guid.Parse)
+                //  pass it directly as string (no Guid.Parse)
                 var result = await _memberService.UpdateAdminDataAsync(memberId, input);
 
-                // ✅ update session data
+                //  update session data
                 HttpContext.Session.SetString("MemberNick", result.MemberNick ?? "Admin");
                 await HttpContext.Session.CommitAsync();
 

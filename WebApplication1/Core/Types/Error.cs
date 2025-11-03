@@ -29,8 +29,8 @@ namespace WebApplication1.Exceptions
         public const string NotAuthenticated = "Sorry, but you are not authenticated — sign up first!";
         public const string MissingMemberNickPhoneEmail = "Missing member nickname, phone, or email";
         public const string InvalidOrExpiredToken = "Token has expired or is invalid";
-        public const string ResetLinkSent = "✅ Reset link sent to your email!";
-        public const string PasswordChanged = "✅ Your password has been changed successfully!";
+        public const string ResetLinkSent = " Reset link sent to your email!";
+        public const string PasswordChanged = " Your password has been changed successfully!";
         public const string BlockedUser = "You have been blocked by the owner of the website!";
         public const string InvalidInput = "Invalid input data";
         public const string TokenCreationFailed = "Token creation failed";

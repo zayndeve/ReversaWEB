@@ -39,7 +39,7 @@ namespace WebApplication1.Services
                 // Ping the server to verify connectivity
                 var command = new BsonDocument("ping", 1);
                 _database.RunCommand<BsonDocument>(command);
-                Console.WriteLine("✅ MongoDB connected successfully!");
+                Console.WriteLine(" MongoDB connected successfully!");
             }
             catch (Exception ex)
             {

@@ -260,10 +260,10 @@ namespace WebApplication1.Services
                 throw new AppException(HttpCode.BadRequest, ErrorMessage.InvalidOrExpiredToken);
             }
 
-            // ✅ Hash the new password
+            //  Hash the new password
             var hashedPassword = BCrypt.Net.BCrypt.HashPassword(newPassword);
 
-            // ✅ Update using ObjectId.Parse to avoid string/ObjectId mismatch
+            //  Update using ObjectId.Parse to avoid string/ObjectId mismatch
             var update = Builders<Member>.Update
                 .Set(m => m.MemberPassword, hashedPassword)
                 .Set(m => m.PasswordResetToken, null)
@@ -275,7 +275,7 @@ namespace WebApplication1.Services
                 update
             );
 
-            Console.WriteLine($"[MemberService] ✅ Password successfully reset for {member.MemberNick}");
+            Console.WriteLine($"[MemberService]  Password successfully reset for {member.MemberNick}");
         }
 
         // ====== Utility ====== //

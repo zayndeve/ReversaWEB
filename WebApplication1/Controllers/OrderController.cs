@@ -26,7 +26,7 @@ namespace WebApplication1.Controllers
             _stripeClient = new StripeClient(stripeSecret);
         }
 
-        // ✅ Create Stripe Payment Intent
+        //  Create Stripe Payment Intent
         [HttpPost("create-payment-intent")]
         public async Task<IActionResult> CreatePaymentIntent([FromBody] PaymentRequest input)
         {
@@ -71,7 +71,7 @@ namespace WebApplication1.Controllers
             }
         }
 
-        // ✅ Save order after successful payment
+        //  Save order after successful payment
         [HttpPost("save-paid-order")]
         public async Task<IActionResult> SaveOrderAfterPayment([FromBody] OrderInput input)
         {
@@ -97,7 +97,7 @@ namespace WebApplication1.Controllers
             }
         }
 
-        // ✅ Get orders by member ID
+        //  Get orders by member ID
         [HttpGet("member/{memberId}")]
         public async Task<IActionResult> GetOrdersByMember(string memberId)
         {

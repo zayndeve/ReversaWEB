@@ -1,4 +1,4 @@
-// ✅ 1. Image preview when file is selected
+//  1. Image preview when file is selected
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.querySelector(".product-form");
 
@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const toggleBtnEmpty = document.getElementById("toggleFormEmpty");
   const cancelBtn = document.getElementById("cancelForm");
   const formContainer = document.getElementById("formContainer");
-  const form = document.querySelector(".product-form"); // ✅ You need this
+  const form = document.querySelector(".product-form"); //  You need this
 
   const showForm = () => {
     formContainer.scrollIntoView({ behavior: "smooth" });
@@ -89,7 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (cancelBtn && form && formContainer) {
     cancelBtn.addEventListener("click", () => {
       alert("You really want to reset the inputs?");
-      form.reset(); // ✅ This now works
+      form.reset(); //  This now works
       const previewImage = document.getElementById("preview-image");
       if (previewImage) {
         previewImage.src = "/img/adminlogo.jpg";

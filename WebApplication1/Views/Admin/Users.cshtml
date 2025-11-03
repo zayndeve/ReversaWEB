@@ -4,7 +4,7 @@
     Layout = "_Layout";
 }
 
-<!-- ✅ Styles -->
+<!--  Styles -->
 <link rel="stylesheet" href="@Url.Content("~/css/common.css")" />
 <link rel="stylesheet" href="@Url.Content("~/css/user.css")" />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -28,7 +28,7 @@
                 </div>
             </div>
 
-            <!-- ✅ Alert Message -->
+            <!--  Alert Message -->
             @if (TempData["AlertMessage"] != null)
             {
                 var type = TempData["AlertType"]?.ToString() ?? "info";

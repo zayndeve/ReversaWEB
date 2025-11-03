@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 2200);
   };
 
-  // ✅ Handle member status updates
+  //  Handle member status updates
   document.querySelectorAll(".member-status-btn").forEach((dropdown) => {
     dropdown.addEventListener("change", async function () {
       const newStatus = this.value;
@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const data = await res.json();
         if (data.success) {
           this.className = `member-status-btn ${newStatus.toLowerCase()}`;
-          showToast("✅ User status updated successfully!", "success");
+          showToast(" User status updated successfully!", "success");
         } else {
           showToast("❌ Failed to update user status.", "danger");
         }

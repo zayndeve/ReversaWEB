@@ -243,7 +243,7 @@ namespace WebApplication1.Controllers
         {
             try
             {
-                // ✅ Verify session authentication
+                //  Verify session authentication
                 var memberId = HttpContext.Session.GetString("MemberId");
                 if (string.IsNullOrEmpty(memberId))
                 {
@@ -254,26 +254,26 @@ namespace WebApplication1.Controllers
                     });
                 }
 
-                // ✅ Attach image if uploaded (save to members folder)
+                //  Attach image if uploaded (save to members folder)
                 if (memberImage != null)
                 {
                     var saved = await FileUploader.SaveFileAsync(memberImage, "members");
                     input.MemberImage = saved;
                 }
 
-                // ✅ Update current user
+                //  Update current user
                 var updated = await _memberService.UpdateAdminDataAsync(memberId, input);
 
-                // ✅ Update session info
+                //  Update session info
                 HttpContext.Session.SetString("MemberNick", updated.MemberNick ?? "User");
                 await HttpContext.Session.CommitAsync();
 
-                // ✅ Return updated profile
+                //  Return updated profile
                 return Ok(new { success = true, data = updated });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "❌ updateSelf error");
+                _logger.LogError(ex, "❌ UpdateSelf error");
                 return StatusCode(500, new
                 {
                     code = 500,
@@ -282,13 +282,13 @@ namespace WebApplication1.Controllers
             }
         }
 #pragma warning disable ASP0023 // Route conflict detected between controller actions
-        [HttpGet("me")]
+        [HttpGet("member-self")]
 #pragma warning restore ASP0023 // Route conflict detected between controller actions
         public async Task<IActionResult> GetSelf()
         {
             try
             {
-                // ✅ Check authentication from session
+                //  Check authentication from session
                 var memberIdString = HttpContext.Session.GetString("MemberId");
                 if (string.IsNullOrEmpty(memberIdString))
                 {
@@ -299,10 +299,10 @@ namespace WebApplication1.Controllers
                     });
                 }
 
-                // ✅ Re-fetch fresh member info from MongoDB
+                //  Re-fetch fresh member info from MongoDB
                 var fullMember = await _memberService.GetByIdAsync(memberIdString);
 
-                return Ok(fullMember); // ✅ Return up-to-date member
+                return Ok(fullMember); //  Return up-to-date member
             }
             catch (Exception ex)
             {

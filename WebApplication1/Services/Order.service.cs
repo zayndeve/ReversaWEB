@@ -24,7 +24,7 @@ namespace WebApplication1.Services
             _memberService = new MemberService(mongoService, new WebApplication1.Core.Utils.EmailHelper(mongoService, config));
         }
 
-        // ✅ Save order after successful payment
+        //  Save order after successful payment
         public async Task<WebApplication1.Models.Order> SavePaidOrderAsync(string memberId, WebApplication1.Types.OrderInput input)
         {
             try
@@ -86,7 +86,7 @@ namespace WebApplication1.Services
             }
         }
 
-        // ✅ Save order items
+        //  Save order items
         private async Task RecordOrderItemsAsync(string orderId, List<OrderItemInput> items)
         {
             if (items == null || items.Count == 0)
@@ -105,7 +105,7 @@ namespace WebApplication1.Services
             await _orderItemCollection.InsertManyAsync(itemData);
         }
 
-        // ✅ Get all orders by member
+        //  Get all orders by member
         public async Task<List<WebApplication1.Models.Order>> GetOrdersByMemberAsync(string memberId)
         {
             try
@@ -125,7 +125,7 @@ namespace WebApplication1.Services
             }
         }
 
-        // ✅ Update order status
+        //  Update order status
         public async Task<WebApplication1.Models.Order?> UpdateOrderStatusAsync(string orderId, OrderStatus newStatus)
         {
             try

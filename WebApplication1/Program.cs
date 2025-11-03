@@ -46,11 +46,14 @@ builder.Services.AddSession(options =>
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
-        policy.WithOrigins("http://localhost:3000")
-              .AllowAnyMethod()
-              .AllowAnyHeader()
-              .AllowCredentials());
+        policy
+            .WithOrigins("http://localhost:3000") // your React dev server
+            .SetIsOriginAllowedToAllowWildcardSubdomains()
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials());
 });
+
 
 // =======================================
 // 🔹 Build App
@@ -77,32 +80,31 @@ if (app.Environment.IsDevelopment())
 // =======================================
 
 // Serve static files from wwwroot
-app.UseStaticFiles();  // ✅ enables /css/, /js/, /img/
-
-// Enable routing
-app.UseRouting();
-
-// Enable CORS
+//  Enable CORS *before* routing and session for frontend requests
 app.UseCors("AllowAll");
 
-// Enable sessions
+// Enable static files and routing
+app.UseStaticFiles();
+app.UseRouting();
+
+//  Enable sessions (after CORS)
 app.UseSession();
 
-// Enable authorization (if needed later)
+// Enable authorization (optional)
 app.UseAuthorization();
 
 // =======================================
 // 🔹 Map Controllers and MVC Routes
 // =======================================
 app.MapControllers();
-app.MapDefaultControllerRoute(); // ✅ enables default {controller}/{action}/{id?} pattern
+app.MapDefaultControllerRoute(); //  enables default {controller}/{action}/{id?} pattern
 
 // =======================================
 // 🔹 Connect MongoDB on startup
 // =======================================
 var mongo = app.Services.GetRequiredService<MongoDBService>();
-Console.WriteLine("✅ MongoDB connected successfully!");
-Console.WriteLine("✅ Server running with MongoDB connection.");
+Console.WriteLine(" MongoDB connected successfully!");
+Console.WriteLine(" Server running with MongoDB connection.");
 
 // =======================================
 // 🔹 Run the Application
