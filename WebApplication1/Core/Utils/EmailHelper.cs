@@ -54,10 +54,13 @@ namespace WebApplication1.Core.Utils
 
                 bool isAdmin = member != null && member.MemberType == MemberType.Admin;
 
-                // Default links match the legacy project (change if you want configurable hosts)
+                // Read base URLs from configuration
+                var backendUrl = _config["Urls:BackendUrl"] ?? "http://localhost:5251";
+                var frontendUrl = _config["Urls:FrontendUrl"] ?? "http://localhost:3000";
+
                 var resetLink = isAdmin
-     ? $"http://localhost:5251/admin/reset-password/{token}"
-     : $"http://localhost:5251/member/reset-password/{token}";
+                    ? $"{backendUrl}/admin/reset-password/{token}"
+                    : $"{frontendUrl}/reset-password/{token}";
 
                 Console.WriteLine($"[EmailHelper] Prepared reset link: {resetLink}");
 
