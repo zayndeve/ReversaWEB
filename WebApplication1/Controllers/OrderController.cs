@@ -32,8 +32,8 @@ namespace WebApplication1.Controllers
         {
             try
             {
-                var member = HttpContext.Session.GetString("member");
-                if (string.IsNullOrEmpty(member))
+                var memberId = HttpContext.Session.GetString("MemberId");
+                if (string.IsNullOrEmpty(memberId))
                 {
                     return Unauthorized(new
                     {
@@ -77,7 +77,7 @@ namespace WebApplication1.Controllers
         {
             try
             {
-                var memberId = HttpContext.Session.GetString("memberId");
+                var memberId = HttpContext.Session.GetString("MemberId");
                 if (string.IsNullOrEmpty(memberId))
                 {
                     return Unauthorized(new
@@ -103,7 +103,7 @@ namespace WebApplication1.Controllers
         {
             try
             {
-                var sessionMemberId = HttpContext.Session.GetString("memberId");
+                var sessionMemberId = HttpContext.Session.GetString("MemberId");
 
                 if (string.IsNullOrEmpty(sessionMemberId) || sessionMemberId != memberId)
                 {
