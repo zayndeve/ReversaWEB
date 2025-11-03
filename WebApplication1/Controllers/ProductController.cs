@@ -89,7 +89,7 @@ namespace WebApplication1.Controllers
                 var result = await _productService.GetProductById(id);
 
                 // Auto-increase views
-                var memberId = HttpContext.Items["memberId"]?.ToString();
+                var memberId = HttpContext.Session.GetString("MemberId");
                 await _productService.TrackProductView(id, memberId);
 
                 return Ok(result);
