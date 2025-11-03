@@ -209,13 +209,13 @@ namespace WebApplication1.Controllers
         }
 
         [HttpPost("reset-password/{token}")]
-        public async Task<IActionResult> ResetPassword(string token, [FromBody] dynamic body)
+        public async Task<IActionResult> ResetPassword(string token, [FromBody] ResetPasswordRequest request)
         {
             try
             {
                 _logger.LogInformation("member resetPassword");
 
-                string? newPassword = body?.newPassword;
+                string? newPassword = request?.NewPassword;
                 if (string.IsNullOrEmpty(newPassword))
                     return BadRequest(new { message = "Missing new password", error = true });
 

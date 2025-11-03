@@ -103,4 +103,9 @@ namespace WebApplication1.Types
         public string? MemberPhone { get; set; }
         public int? MemberPoints { get; set; }
     }
+
+    public class ResetPasswordRequest
+    {
+        public string NewPassword { get; set; } = string.Empty;
+    }
 }
