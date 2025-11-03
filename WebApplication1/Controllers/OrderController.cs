@@ -22,7 +22,7 @@ namespace WebApplication1.Controllers
         {
             _orderService = orderService;
             _config = config;
-            var stripeSecret = _config["Stripe:SecretKey"];
+            var stripeSecret = _config["STRIPE_SECRET_KEY"];
             _stripeClient = new StripeClient(stripeSecret);
         }
 
