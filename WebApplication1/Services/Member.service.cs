@@ -303,13 +303,14 @@ namespace WebApplication1.Services
                 .Set(m => m.MemberNick, input.MemberNick ?? found.MemberNick)
                 .Set(m => m.MemberEmail, input.MemberEmail ?? found.MemberEmail)
                 .Set(m => m.MemberPhone, input.MemberPhone ?? found.MemberPhone)
-                .Set(m => m.MemberImage, input.MemberImage ?? found.MemberImage);
+                .Set(m => m.MemberAddress, input.MemberAddress ?? found.MemberAddress)
+                .Set(m => m.MemberDesc, input.MemberDesc ?? found.MemberDesc)
+                .Set(m => m.MemberImage, input.MemberImage ?? found.MemberImage)
+                .Set(m => m.UpdatedAt, DateTime.UtcNow);
 
             var result = await _members.UpdateOneAsync(filter, update);
 
-            if (result.ModifiedCount == 0)
-                throw new AppException(HttpCode.NotModified, ErrorMessage.UpdateFailed);
-
+            // Return the updated document (even if no changes were made)
             return await _members.Find(filter).FirstOrDefaultAsync();
         }
 
