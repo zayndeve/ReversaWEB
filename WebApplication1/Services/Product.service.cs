@@ -84,6 +84,10 @@ namespace WebApplication1.Services
         // === Get Product By Id === //
         public async Task<Product> GetProductById(string id)
         {
+            // Check if id is a valid ObjectId
+            if (!ObjectId.TryParse(id, out _))
+                throw new Exception($"'{id}' is not a valid product ID");
+
             var filter = Builders<Product>.Filter.Eq(p => p.Id, id);
             var product = await _productCollection.Find(filter).FirstOrDefaultAsync();
 

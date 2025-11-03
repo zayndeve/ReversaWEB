@@ -97,6 +97,8 @@ namespace WebApplication1.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine("Error, GetProductById: " + ex.Message);
+                if (ex.Message.Contains("not a valid product ID"))
+                    return BadRequest(new { message = ex.Message });
                 return StatusCode(500, new { message = "Something went wrong" });
             }
         }
