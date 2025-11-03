@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MongoDB.Driver;
+using MongoDB.Bson;
 using WebApplication1.Models;
 using WebApplication1.Enums;
 using WebApplication1.Types;
