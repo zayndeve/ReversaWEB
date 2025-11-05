@@ -17,7 +17,7 @@ namespace WebApplication1.Services
             _orders = mongo.Database.GetCollection<Order>("orders");
             _orderItems = mongo.Database.GetCollection<OrderItem>("orderItems");
             _members = mongo.Database.GetCollection<Member>("members");
-            _products = mongo.Database.GetCollection<Product>("products");
+            _products = mongo.Database.GetCollection<Product>("Products");
         }
 
         // ===== KPI ===== //
@@ -54,7 +54,7 @@ namespace WebApplication1.Services
         {
             var pipeline = new[]
             {
-                new BsonDocument("$match", new BsonDocument("OrderStatus", "PAID")),
+                new BsonDocument("$match", new BsonDocument("OrderStatus", OrderStatus.PAID.ToString())),
                 new BsonDocument("$group", new BsonDocument
                 {
                     { "_id", new BsonDocument
@@ -75,6 +75,8 @@ namespace WebApplication1.Services
 
             var results = await _orders.Aggregate<BsonDocument>(pipeline).ToListAsync();
 
+            Console.WriteLine($"✅ Retrieved {results.Count} monthly sales entries");
+
             return results.Select(r => new
             {
                 Month = $"{r["_id"]["month"]}/{r["_id"]["year"]}",
@@ -88,9 +90,10 @@ namespace WebApplication1.Services
         {
             var pipeline = new[]
             {
+                new BsonDocument("$addFields", new BsonDocument("ProductId", new BsonDocument("$toObjectId", "$ProductId"))),
                 new BsonDocument("$lookup", new BsonDocument
                 {
-                    { "from", "products" },
+                    { "from", "Products" },
                     { "localField", "ProductId" },
                     { "foreignField", "_id" },
                     { "as", "product" }
@@ -108,6 +111,8 @@ namespace WebApplication1.Services
 
             var results = await _orderItems.Aggregate<BsonDocument>(pipeline).ToListAsync();
 
+            Console.WriteLine($"✅ Retrieved {results.Count} top categories");
+
             return results.Select(r => new
             {
                 Name = r["_id"].IsBsonNull ? "Uncategorized" : r["_id"].AsString,
@@ -120,6 +125,7 @@ namespace WebApplication1.Services
         {
             var pipeline = new[]
             {
+                new BsonDocument("$addFields", new BsonDocument("OrderId", new BsonDocument("$toObjectId", "$OrderId"))),
                 new BsonDocument("$lookup", new BsonDocument
                 {
                     { "from", "orders" },
@@ -128,6 +134,7 @@ namespace WebApplication1.Services
                     { "as", "order" }
                 }),
                 new BsonDocument("$unwind", "$order"),
+                new BsonDocument("$match", new BsonDocument("order.OrderStatus", OrderStatus.PAID.ToString())),
                 new BsonDocument("$group", new BsonDocument
                 {
                     { "_id", "$order.MemberId" },
@@ -156,6 +163,7 @@ namespace WebApplication1.Services
                 });
             }
 
+            Console.WriteLine($"✅ Retrieved {buyers.Count} top buyers");
             return buyers;
         }
     }
