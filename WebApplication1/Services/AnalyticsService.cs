@@ -54,7 +54,7 @@ namespace WebApplication1.Services
         {
             var pipeline = new[]
             {
-                new BsonDocument("$match", new BsonDocument("OrderStatus", OrderStatus.PAID.ToString())),
+                new BsonDocument("$match", new BsonDocument("orderStatus", OrderStatus.PAID.ToString())),
                 new BsonDocument("$group", new BsonDocument
                 {
                     { "_id", new BsonDocument
@@ -75,6 +75,7 @@ namespace WebApplication1.Services
 
             var results = await _orders.Aggregate<BsonDocument>(pipeline).ToListAsync();
 
+            Console.WriteLine($"✅ Found {results.Count} orders with status 'PAID'");
             Console.WriteLine($"✅ Retrieved {results.Count} monthly sales entries");
 
             return results.Select(r => new
@@ -134,7 +135,7 @@ namespace WebApplication1.Services
                     { "as", "order" }
                 }),
                 new BsonDocument("$unwind", "$order"),
-                new BsonDocument("$match", new BsonDocument("order.OrderStatus", OrderStatus.PAID.ToString())),
+                new BsonDocument("$match", new BsonDocument("order.orderStatus", OrderStatus.PAID.ToString())),
                 new BsonDocument("$group", new BsonDocument
                 {
                     { "_id", "$order.MemberId" },

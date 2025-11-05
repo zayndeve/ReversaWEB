@@ -134,5 +134,25 @@ namespace WebApplication1.Controllers
                 return StatusCode(500, new { message = "Internal server error" });
             }
         }
+        [HttpGet("my-orders")]
+        public async Task<IActionResult> GetMyOrders()
+        {
+            try
+            {
+                var memberId = HttpContext.Session.GetString("User_MemberId");
+                if (string.IsNullOrEmpty(memberId))
+                    return Unauthorized(new { message = "User not authenticated." });
+
+                var orders = await _orderService.GetOrdersByMemberAsync(memberId);
+                Console.WriteLine($"✅ Retrieved {orders.Count} orders for member: {memberId}");
+                return Ok(orders);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Error fetching my orders: {ex.Message}");
+                return StatusCode(500, new { message = "Internal server error" });
+            }
+        }
+
     }
 }

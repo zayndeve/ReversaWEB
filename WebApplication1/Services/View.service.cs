@@ -4,7 +4,6 @@ using MongoDB.Driver;
 using ViewModel = WebApplication1.Models.View;
 using WebApplication1.Types;
 
-
 namespace WebApplication1.Services
 {
     public class ViewService
@@ -16,39 +15,45 @@ namespace WebApplication1.Services
             _viewCollection = mongoService.Database.GetCollection<View>("Views");
         }
 
-        // === Check if view already exists === //
-        public async Task<View?> CheckViewExistenceAsync(ViewInput input)
-        {
-            var filter = Builders<View>.Filter.And(
-                Builders<View>.Filter.Eq(v => v.MemberId, input.MemberId),
-                Builders<View>.Filter.Eq(v => v.ViewRefId, input.ViewRefId)
-            );
-
-            var existingView = await _viewCollection.Find(filter).FirstOrDefaultAsync();
-            return existingView;
-        }
-
-        // === Insert new view === //
-        public async Task<View> InsertMemberViewAsync(ViewInput input)
+        // === Insert view only if it doesn't already exist (Atomic Upsert) === //
+        public async Task<bool> AddUniqueViewAsync(ViewInput input)
         {
             try
             {
-                var newView = new View
-                {
-                    MemberId = input.MemberId,
-                    ViewRefId = input.ViewRefId,
-                    ViewGroup = input.ViewGroup,
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
-                };
+                var filter = Builders<View>.Filter.And(
+                    Builders<View>.Filter.Eq(v => v.MemberId, input.MemberId),
+                    Builders<View>.Filter.Eq(v => v.ViewRefId, input.ViewRefId),
+                    Builders<View>.Filter.Eq(v => v.ViewGroup, input.ViewGroup)
+                );
 
-                await _viewCollection.InsertOneAsync(newView);
-                return newView;
+                var update = Builders<View>.Update
+                    .SetOnInsert(v => v.MemberId, input.MemberId)
+                    .SetOnInsert(v => v.ViewRefId, input.ViewRefId)
+                    .SetOnInsert(v => v.ViewGroup, input.ViewGroup)
+                    .SetOnInsert(v => v.CreatedAt, DateTime.UtcNow)
+                    .SetOnInsert(v => v.UpdatedAt, DateTime.UtcNow);
+
+                // Perform atomic upsert
+                var result = await _viewCollection.UpdateOneAsync(
+                    filter,
+                    update,
+                    new UpdateOptions { IsUpsert = true }
+                );
+
+                // Return true only if a new view was inserted (not existing)
+                if (result.UpsertedId != null)
+                {
+                    Console.WriteLine($"✅ New view inserted for {input.ViewGroup}: {input.ViewRefId} by {input.MemberId}");
+                    return true;
+                }
+
+                Console.WriteLine($"ℹ️ View already exists: {input.ViewGroup}/{input.ViewRefId}/{input.MemberId}");
+                return false;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"ERROR, InsertMemberViewAsync: {ex.Message}");
-                throw new Exception("Failed to create new view entry.");
+                Console.WriteLine($"❌ Error, AddUniqueViewAsync: {ex.Message}");
+                throw;
             }
         }
     }
