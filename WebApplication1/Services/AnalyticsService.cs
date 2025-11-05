@@ -91,20 +91,20 @@ namespace WebApplication1.Services
         {
             var pipeline = new[]
             {
-                new BsonDocument("$addFields", new BsonDocument("ProductId", new BsonDocument("$toObjectId", "$ProductId"))),
+                new BsonDocument("$addFields", new BsonDocument("productId", new BsonDocument("$toObjectId", "$productId"))),
                 new BsonDocument("$lookup", new BsonDocument
                 {
                     { "from", "Products" },
-                    { "localField", "ProductId" },
+                    { "localField", "productId" },
                     { "foreignField", "_id" },
                     { "as", "product" }
                 }),
                 new BsonDocument("$unwind", "$product"),
                 new BsonDocument("$group", new BsonDocument
                 {
-                    { "_id", "$product.ProductCategory" },
+                    { "_id", "$product.productCategory" },
                     { "value", new BsonDocument("$sum",
-                        new BsonDocument("$multiply", new BsonArray { "$ItemPrice", "$ItemQuantity" })) }
+                        new BsonDocument("$multiply", new BsonArray { "$itemPrice", "$itemQuantity" })) }
                 }),
                 new BsonDocument("$sort", new BsonDocument("value", -1)),
                 new BsonDocument("$limit", 5)
@@ -126,11 +126,11 @@ namespace WebApplication1.Services
         {
             var pipeline = new[]
             {
-                new BsonDocument("$addFields", new BsonDocument("OrderId", new BsonDocument("$toObjectId", "$OrderId"))),
+                new BsonDocument("$addFields", new BsonDocument("orderId", new BsonDocument("$toObjectId", "$orderId"))),
                 new BsonDocument("$lookup", new BsonDocument
                 {
                     { "from", "orders" },
-                    { "localField", "OrderId" },
+                    { "localField", "orderId" },
                     { "foreignField", "_id" },
                     { "as", "order" }
                 }),
@@ -138,10 +138,10 @@ namespace WebApplication1.Services
                 new BsonDocument("$match", new BsonDocument("order.orderStatus", OrderStatus.PAID.ToString())),
                 new BsonDocument("$group", new BsonDocument
                 {
-                    { "_id", "$order.MemberId" },
+                    { "_id", "$order.memberId" },
                     { "totalSpent", new BsonDocument("$sum",
-                        new BsonDocument("$multiply", new BsonArray { "$ItemPrice", "$ItemQuantity" })) },
-                    { "lastPurchase", new BsonDocument("$max", "$order.CreatedAt") }
+                        new BsonDocument("$multiply", new BsonArray { "$itemPrice", "$itemQuantity" })) },
+                    { "lastPurchase", new BsonDocument("$max", "$order.createdAt") }
                 }),
                 new BsonDocument("$sort", new BsonDocument("totalSpent", -1)),
                 new BsonDocument("$limit", 5)
