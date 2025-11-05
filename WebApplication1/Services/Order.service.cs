@@ -29,6 +29,7 @@ namespace WebApplication1.Services
         {
             try
             {
+                Console.WriteLine($"💾 Saving order for memberId: {memberId}");
                 if (string.IsNullOrEmpty(memberId))
                     throw new Exception("Invalid member ID");
 
@@ -77,6 +78,7 @@ namespace WebApplication1.Services
                 var earnedPoints = totalQuantity * 2;
                 await _memberService.AddUserPointAsync(memberId, earnedPoints);
 
+                Console.WriteLine($"✅ Order saved with ID: {newOrder.Id} for memberId: {memberId}");
                 return newOrder;
             }
             catch (Exception ex)
@@ -110,12 +112,14 @@ namespace WebApplication1.Services
         {
             try
             {
+                Console.WriteLine($"🔍 Querying MongoDB for memberId: {memberId}");
                 var filter = Builders<WebApplication1.Models.Order>.Filter.Eq(o => o.MemberId, memberId);
                 var orders = await _orderCollection
                     .Find(filter)
                     .SortByDescending(o => o.CreatedAt)
                     .ToListAsync();
 
+                Console.WriteLine($"📊 MongoDB returned {orders.Count} orders for memberId: {memberId}");
                 return orders;
             }
             catch (Exception ex)

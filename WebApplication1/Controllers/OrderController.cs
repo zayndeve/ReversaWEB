@@ -104,10 +104,15 @@ namespace WebApplication1.Controllers
         {
             try
             {
+                // Debug logging
+                Console.WriteLine($"🔎 Session Cookie: {Request.Cookies[".AspNetCore.Session"]}");
                 var sessionMemberId = HttpContext.Session.GetString("User_MemberId");
+                Console.WriteLine($"🔎 Session User_MemberId: {sessionMemberId}");
+                Console.WriteLine($"🔎 URL memberId: {memberId}");
 
                 if (string.IsNullOrEmpty(sessionMemberId) || sessionMemberId != memberId)
                 {
+                    Console.WriteLine($"❌ Auth failed: sessionMemberId={sessionMemberId}, urlMemberId={memberId}");
                     return Unauthorized(new
                     {
                         code = 401,
@@ -117,6 +122,10 @@ namespace WebApplication1.Controllers
 
                 var orders = await _orderService.GetOrdersByMemberAsync(memberId);
                 Console.WriteLine($"✅ Retrieved {orders.Count} orders for member: {memberId}");
+                if (orders.Count > 0)
+                {
+                    Console.WriteLine($"📦 First order ID: {orders[0].Id}, MemberId: {orders[0].MemberId}");
+                }
                 return Ok(orders);
             }
             catch (Exception ex)
