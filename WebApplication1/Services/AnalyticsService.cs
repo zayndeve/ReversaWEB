@@ -152,7 +152,7 @@ namespace WebApplication1.Services
 
             foreach (var buyer in result)
             {
-                var memberId = buyer["_id"].AsString;
+                var memberId = buyer["_id"].AsObjectId.ToString();
                 var member = await _members.Find(m => m.Id == memberId).FirstOrDefaultAsync();
 
                 buyers.Add(new
