@@ -99,41 +99,32 @@ namespace WebApplication1.Services
         }
 
         // === Track Product View (optional) === //
-        public async Task TrackProductView(string productId, string? memberId)
+        public async Task TrackProductView(string productId, string memberId)
         {
-            try
+            if (string.IsNullOrEmpty(productId) || string.IsNullOrEmpty(memberId) || memberId == "guest") return;
+
+            var added = await _viewService.AddUniqueViewAsync(new ViewInput
             {
-                var productFilter = Builders<Product>.Filter.Eq(p => p.Id, productId);
+                MemberId = memberId,
+                ViewRefId = productId,
+                ViewGroup = ViewGroup.PRODUCT
+            });
 
-                if (!string.IsNullOrEmpty(memberId))
-                {
-                    var exists = await _viewService.CheckViewExistenceAsync(new ViewInput
-                    {
-                        MemberId = memberId,
-                        ViewRefId = productId,
-                        ViewGroup = ViewGroup.PRODUCT
-                    });
+            if (added)
+            {
+                await _productCollection.UpdateOneAsync(
+                    Builders<Product>.Filter.Eq(p => p.Id, productId),
+                    Builders<Product>.Update.Inc(p => p.ProductViews, 1)
+                );
 
-                    if (exists == null)
-
-                    {
-                        await _viewService.InsertMemberViewAsync(new ViewInput
-                        {
-                            MemberId = memberId,
-                            ViewRefId = productId,
-                            ViewGroup = ViewGroup.PRODUCT
-                        });
-
-                        var update = Builders<Product>.Update.Inc(p => p.ProductViews, 1);
-                        await _productCollection.UpdateOneAsync(productFilter, update);
-                    }
-                }
+                Console.WriteLine($"✅ Product view incremented for {productId} by {memberId}");
             }
-            catch (Exception ex)
+            else
             {
-                Console.WriteLine($"Error, TrackProductView: {ex.Message}");
+                Console.WriteLine($"ℹ️ View already exists for {productId}/{memberId}, skipped increment.");
             }
         }
+
 
         // === Get Product List === //
         public async Task<(List<Product> Products, long Total)> GetProductList(ProductInquiry inquiry)

@@ -78,30 +78,34 @@ namespace WebApplication1.Controllers
             }
         }
 
-        // === Get Product By Id === //
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetProductById(string id)
+
+        // === Get Product By Id and Increment View (Popular Product Detail) === //
+        [HttpGet("popular/{id}")]
+        public async Task<IActionResult> GetPopularProductById(string id)
         {
             try
             {
-                Console.WriteLine("GetProductById");
+                Console.WriteLine("GetPopularProductById");
 
-                var result = await _productService.GetProductById(id);
+                var memberId = HttpContext.Session.GetString("User_MemberId");
+                var product = await _productService.GetProductById(id);
 
-                // Auto-increase views
-                var memberId = HttpContext.Session.GetString("MemberId");
-                await _productService.TrackProductView(id, memberId);
+                // Track product view if user is logged in
+                if (!string.IsNullOrEmpty(memberId))
+                {
+                    await _productService.TrackProductView(id, memberId);
+                }
+                // Guest views are not tracked to avoid invalid ObjectId
 
-                return Ok(result);
+                return Ok(product);
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error, GetProductById: " + ex.Message);
-                if (ex.Message.Contains("not a valid product ID"))
-                    return BadRequest(new { message = ex.Message });
-                return StatusCode(500, new { message = "Something went wrong" });
+                Console.WriteLine($"❌ Error GetPopularProductById: {ex.Message}");
+                return StatusCode(500, new { message = "Internal server error" });
             }
         }
+
 
         // === Get Product List === //
         [HttpGet("list")]
