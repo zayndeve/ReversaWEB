@@ -32,7 +32,7 @@ namespace WebApplication1.Controllers
         {
             try
             {
-                var memberId = HttpContext.Session.GetString("MemberId");
+                var memberId = HttpContext.Session.GetString("User_MemberId");
                 if (string.IsNullOrEmpty(memberId))
                 {
                     return Unauthorized(new
@@ -77,7 +77,7 @@ namespace WebApplication1.Controllers
         {
             try
             {
-                var memberId = HttpContext.Session.GetString("MemberId");
+                var memberId = HttpContext.Session.GetString("User_MemberId");
                 if (string.IsNullOrEmpty(memberId))
                 {
                     return Unauthorized(new
@@ -88,6 +88,7 @@ namespace WebApplication1.Controllers
                 }
 
                 var savedOrder = await _orderService.SavePaidOrderAsync(memberId, input);
+                Console.WriteLine($"✅ Order saved for member: {memberId}, Order ID: {savedOrder.Id}");
                 return Ok(savedOrder);
             }
             catch (Exception ex)
@@ -103,7 +104,7 @@ namespace WebApplication1.Controllers
         {
             try
             {
-                var sessionMemberId = HttpContext.Session.GetString("MemberId");
+                var sessionMemberId = HttpContext.Session.GetString("User_MemberId");
 
                 if (string.IsNullOrEmpty(sessionMemberId) || sessionMemberId != memberId)
                 {
@@ -115,6 +116,7 @@ namespace WebApplication1.Controllers
                 }
 
                 var orders = await _orderService.GetOrdersByMemberAsync(memberId);
+                Console.WriteLine($"✅ Retrieved {orders.Count} orders for member: {memberId}");
                 return Ok(orders);
             }
             catch (Exception ex)
