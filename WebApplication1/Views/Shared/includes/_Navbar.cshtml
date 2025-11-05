@@ -3,6 +3,8 @@
   _Navbar.cshtml — Razor version of navbar.ejs
   ==========================================
 *@
+@* Updated session keys to Admin_ prefix for isolated admin sessions *@
+
 @using WebApplication1.Models
 @model Member?
 
@@ -15,7 +17,7 @@
         <span class="highlighted">
           @{
             // Prefer strongly-typed model; fall back to session values if view didn't pass a model
-            var sessionNick = Context.Session.GetString("MemberNick");
+            var sessionNick = Context.Session.GetString("Admin_MemberNick");
             var nickToShow = Model?.MemberNick ?? sessionNick ?? "Nick is not defined";
           }
           @nickToShow
@@ -31,8 +33,8 @@
       <div class="admin-profile">
         @{
           // Resolve image and nick from model first, then session, then defaults
-          var sessionNick2 = Context.Session.GetString("MemberNick");
-          var sessionImage = Context.Session.GetString("MemberImage");
+          var sessionNick2 = Context.Session.GetString("Admin_MemberNick");
+          var sessionImage = Context.Session.GetString("Admin_MemberImage");
 
           var finalNick = Model?.MemberNick ?? sessionNick2 ?? "Admin";
 

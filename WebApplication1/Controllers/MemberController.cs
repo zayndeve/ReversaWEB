@@ -9,6 +9,9 @@ using WebApplication1.Enums;
 
 namespace WebApplication1.Controllers
 {
+    // User/Member API Controller
+    // Session isolation: Uses "User_" prefixed keys (e.g., User_MemberId) to avoid conflicts with Admin sessions.
+    // Admin sessions use "Admin_" prefixed keys. Both share the same session cookie but have isolated data.
     [ApiController]
     [Route("api/member")]
     public class MemberController : ControllerBase
@@ -69,11 +72,12 @@ namespace WebApplication1.Controllers
                 var result = await _memberService.SignupAsync(input);
 
                 // create session (you can later replace with JWT)
-                HttpContext.Session.SetString("MemberId", result.Id);
-                HttpContext.Session.SetString("MemberNick", result.MemberNick);
-                HttpContext.Session.SetString("MemberType", result.MemberType.ToString());
+                // User session keys are prefixed with "User_" to isolate from Admin sessions
+                HttpContext.Session.SetString("User_MemberId", result.Id);
+                HttpContext.Session.SetString("User_MemberNick", result.MemberNick);
+                HttpContext.Session.SetString("User_MemberType", result.MemberType.ToString());
                 // store image filename if present so server-side partials can read it
-                HttpContext.Session.SetString("MemberImage", result.MemberImage ?? string.Empty);
+                HttpContext.Session.SetString("User_MemberImage", result.MemberImage ?? string.Empty);
 
                 return Created("", new { member = result });
             }
@@ -99,10 +103,11 @@ namespace WebApplication1.Controllers
                 var result = await _memberService.LoginAsync(input);
 
                 // Store auth session
-                HttpContext.Session.SetString("MemberId", result.Id);
-                HttpContext.Session.SetString("MemberNick", result.MemberNick);
-                HttpContext.Session.SetString("MemberType", result.MemberType.ToString());
-                HttpContext.Session.SetString("MemberImage", result.MemberImage ?? string.Empty);
+                // User session keys are prefixed with "User_" to isolate from Admin sessions
+                HttpContext.Session.SetString("User_MemberId", result.Id);
+                HttpContext.Session.SetString("User_MemberNick", result.MemberNick);
+                HttpContext.Session.SetString("User_MemberType", result.MemberType.ToString());
+                HttpContext.Session.SetString("User_MemberImage", result.MemberImage ?? string.Empty);
 
                 return Ok(new { member = result });
             }
@@ -140,7 +145,7 @@ namespace WebApplication1.Controllers
         {
             try
             {
-                var memberId = HttpContext.Session.GetString("MemberId");
+                var memberId = HttpContext.Session.GetString("User_MemberId");
                 if (string.IsNullOrEmpty(memberId))
                 {
                     throw new AppException(HttpCode.Unauthorized, ErrorMessage.NotAuthenticated);
@@ -167,7 +172,7 @@ namespace WebApplication1.Controllers
         {
             try
             {
-                var memberNick = HttpContext.Session.GetString("MemberNick");
+                var memberNick = HttpContext.Session.GetString("User_MemberNick");
                 if (string.IsNullOrEmpty(memberNick))
                 {
                     return Unauthorized(new { success = false, message = "No session found" });
@@ -244,7 +249,7 @@ namespace WebApplication1.Controllers
             try
             {
                 //  Verify session authentication
-                var memberId = HttpContext.Session.GetString("MemberId");
+                var memberId = HttpContext.Session.GetString("User_MemberId");
                 if (string.IsNullOrEmpty(memberId))
                 {
                     return StatusCode(401, new
@@ -265,7 +270,7 @@ namespace WebApplication1.Controllers
                 var updated = await _memberService.UpdateAdminDataAsync(memberId, input);
 
                 //  Update session info
-                HttpContext.Session.SetString("MemberNick", updated.MemberNick ?? "User");
+                HttpContext.Session.SetString("User_MemberNick", updated.MemberNick ?? "User");
                 await HttpContext.Session.CommitAsync();
 
                 //  Return updated profile
@@ -289,7 +294,7 @@ namespace WebApplication1.Controllers
             try
             {
                 //  Check authentication from session
-                var memberIdString = HttpContext.Session.GetString("MemberId");
+                var memberIdString = HttpContext.Session.GetString("User_MemberId");
                 if (string.IsNullOrEmpty(memberIdString))
                 {
                     return StatusCode(401, new

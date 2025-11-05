@@ -1,6 +1,7 @@
 @{
     Layout = "_Layout";
 }
+@* Updated session keys to Admin_ prefix for isolated admin sessions *@
 
 @section Head {
     <link rel="stylesheet" href="~/css/profile.css" />
@@ -16,12 +17,12 @@
     var sess = Context.Session;
     var modelMember = Model as Member;
 
-    var memberNick = modelMember?.MemberNick ?? sess.GetString("MemberNick") ?? string.Empty;
-    var memberPhone = modelMember?.MemberPhone ?? sess.GetString("MemberPhone") ?? string.Empty;
-    var memberEmail = modelMember?.MemberEmail ?? sess.GetString("MemberEmail") ?? string.Empty;
-    var memberDesc = modelMember?.MemberDesc ?? sess.GetString("MemberDesc") ?? string.Empty;
-    var memberAddress = modelMember?.MemberAddress ?? sess.GetString("MemberAddress") ?? string.Empty;
-    var memberImage = modelMember?.MemberImage ?? sess.GetString("MemberImage") ?? string.Empty;
+    var memberNick = modelMember?.MemberNick ?? sess.GetString("Admin_MemberNick") ?? string.Empty;
+    var memberPhone = modelMember?.MemberPhone ?? sess.GetString("Admin_MemberPhone") ?? string.Empty;
+    var memberEmail = modelMember?.MemberEmail ?? sess.GetString("Admin_MemberEmail") ?? string.Empty;
+    var memberDesc = modelMember?.MemberDesc ?? sess.GetString("Admin_MemberDesc") ?? string.Empty;
+    var memberAddress = modelMember?.MemberAddress ?? sess.GetString("Admin_MemberAddress") ?? string.Empty;
+    var memberImage = modelMember?.MemberImage ?? sess.GetString("Admin_MemberImage") ?? string.Empty;
 
     var avatarSrc = !string.IsNullOrEmpty(memberImage) ? Url.Content("~/uploads/members/" + memberImage) :
     Url.Content("~/img/profile.png");

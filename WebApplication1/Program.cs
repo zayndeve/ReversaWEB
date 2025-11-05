@@ -40,18 +40,17 @@ builder.Services.AddSession(options =>
     options.IdleTimeout = TimeSpan.FromHours(2); // 2 hours session timeout
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
+    // Note: Cookie name is default .AspNetCore.Session, but sessions are isolated by different keys (Admin_* vs User_*)
 });
 
-// === Enable CORS for all origins === //
+// === Enable CORS for React frontend === //
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", policy =>
-        policy
-            .WithOrigins("http://localhost:3000") // your React dev server
-            .SetIsOriginAllowedToAllowWildcardSubdomains()
-            .AllowAnyMethod()
-            .AllowAnyHeader()
-            .AllowCredentials());
+    options.AddPolicy("AllowFrontend", policy =>
+        policy.WithOrigins("http://localhost:3000")
+              .AllowCredentials()
+              .AllowAnyHeader()
+              .AllowAnyMethod());
 });
 
 
@@ -81,23 +80,32 @@ if (app.Environment.IsDevelopment())
 
 // Serve static files from wwwroot
 //  Enable CORS *before* routing and session for frontend requests
-app.UseCors("AllowAll");
+app.UseCors("AllowFrontend");
 
 // Enable static files and routing
 app.UseStaticFiles();
 app.UseRouting();
 
-//  Enable sessions (after CORS)
-app.UseSession();
-
 // Enable authorization (optional)
 app.UseAuthorization();
 
+// Enable sessions (after routing)
+app.UseSession();
+
 // =======================================
-// 🔹 Map Controllers and MVC Routes
+// 🔹 Map Controllers and MVC Routes with Separate Sessions
 // =======================================
-app.MapControllers();
-app.MapDefaultControllerRoute(); //  enables default {controller}/{action}/{id?} pattern
+// Admin routes (/admin/*) use Admin_* session keys for isolation
+app.MapWhen(context => context.Request.Path.StartsWithSegments("/admin"), adminApp =>
+{
+    adminApp.UseEndpoints(endpoints => endpoints.MapDefaultControllerRoute()); // Enables default {controller}/{action}/{id?} pattern for admin
+});
+
+// Member API routes (/api/member/*) use User_* session keys for isolation
+app.MapWhen(context => context.Request.Path.StartsWithSegments("/api/member"), memberApp =>
+{
+    memberApp.UseEndpoints(endpoints => endpoints.MapControllers()); // Maps API controllers for member
+});
 
 // =======================================
 // 🔹 Connect MongoDB on startup

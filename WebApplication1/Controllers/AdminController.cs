@@ -9,6 +9,9 @@ using WebApplication1.Core.Utils;
 
 namespace WebApplication1.Controllers
 {
+    // Admin Controller for Razor views
+    // Session isolation: Uses "Admin_" prefixed keys (e.g., Admin_MemberId) to avoid conflicts with User sessions.
+    // User sessions use "User_" prefixed keys. Both share the same session cookie but have isolated data.
     public class AdminController : Controller
     {
         private readonly MemberService _memberService;
@@ -110,6 +113,43 @@ namespace WebApplication1.Controllers
                 TempData["AlertType"] = "danger";
                 TempData["AlertMessage"] = "❌ Unable to load dashboard.";
                 return RedirectToAction("GetLogin", "Admin");
+            }
+        }
+
+        // ==== Profile ==== //
+        [HttpGet("admin/profile")]
+        public async Task<IActionResult> GetProfile()
+        {
+            try
+            {
+                var adminId = HttpContext.Session.GetString("Admin_MemberId");
+                if (string.IsNullOrEmpty(adminId))
+                {
+                    TempData["AlertType"] = "danger";
+                    TempData["AlertMessage"] = "Not authenticated.";
+                    return RedirectToAction("GetLogin", "Admin");
+                }
+
+                var admin = await _memberService.GetByIdAsync(adminId);
+
+                // Sync session data with DB values
+                // Using Admin_ prefixed session keys for isolated admin session data
+                HttpContext.Session.SetString("Admin_MemberNick", admin.MemberNick ?? "Admin");
+                HttpContext.Session.SetString("Admin_MemberEmail", admin.MemberEmail ?? string.Empty);
+                HttpContext.Session.SetString("Admin_MemberPhone", admin.MemberPhone ?? string.Empty);
+                HttpContext.Session.SetString("Admin_MemberAddress", admin.MemberAddress ?? string.Empty);
+                HttpContext.Session.SetString("Admin_MemberDesc", admin.MemberDesc ?? string.Empty);
+                HttpContext.Session.SetString("Admin_MemberImage", admin.MemberImage ?? string.Empty);
+                await HttpContext.Session.CommitAsync();
+
+                return View("Profile", admin);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading admin profile");
+                TempData["AlertType"] = "danger";
+                TempData["AlertMessage"] = "Failed to load profile.";
+                return RedirectToAction("GetDashboard", "Admin");
             }
         }
 
@@ -221,10 +261,16 @@ namespace WebApplication1.Controllers
                 var result = await _memberService.ProcessSignupAsync(newMember);
 
                 // store admin info in session
-                HttpContext.Session.SetString("MemberId", result.Id?.ToString() ?? "");
-                HttpContext.Session.SetString("MemberNick", result.MemberNick ?? "Admin");
+                // Admin session keys are prefixed with "Admin_" to isolate from User sessions
+                HttpContext.Session.SetString("Admin_MemberId", result.Id?.ToString() ?? "");
+                HttpContext.Session.SetString("Admin_MemberNick", result.MemberNick ?? "Admin");
+                HttpContext.Session.SetString("Admin_MemberType", "Admin"); // Set admin type
                 // store image name in session if present
-                HttpContext.Session.SetString("MemberImage", result.MemberImage ?? string.Empty);
+                HttpContext.Session.SetString("Admin_MemberImage", result.MemberImage ?? string.Empty);
+                HttpContext.Session.SetString("Admin_MemberEmail", result.MemberEmail ?? "");
+                HttpContext.Session.SetString("Admin_MemberPhone", result.MemberPhone ?? "");
+                HttpContext.Session.SetString("Admin_MemberAddress", result.MemberAddress ?? "");
+                HttpContext.Session.SetString("Admin_MemberDesc", result.MemberDesc ?? "");
 
                 // simulate alert + redirect
                 TempData["AlertMessage"] = " Signup successful! Please log in.";
@@ -253,10 +299,16 @@ namespace WebApplication1.Controllers
                 HttpContext.Session.Clear();
 
                 // store admin info
-                HttpContext.Session.SetString("MemberId", result.Id?.ToString() ?? "");
-                HttpContext.Session.SetString("MemberNick", result.MemberNick ?? "Admin");
+                // Admin session keys are prefixed with "Admin_" to isolate from User sessions
+                HttpContext.Session.SetString("Admin_MemberId", result.Id?.ToString() ?? "");
+                HttpContext.Session.SetString("Admin_MemberNick", result.MemberNick ?? "Admin");
+                HttpContext.Session.SetString("Admin_MemberType", "Admin"); // Set admin type
                 // store image name so navbar can show avatar
-                HttpContext.Session.SetString("MemberImage", result.MemberImage ?? string.Empty);
+                HttpContext.Session.SetString("Admin_MemberImage", result.MemberImage ?? string.Empty);
+                HttpContext.Session.SetString("Admin_MemberEmail", result.MemberEmail ?? "");
+                HttpContext.Session.SetString("Admin_MemberPhone", result.MemberPhone ?? "");
+                HttpContext.Session.SetString("Admin_MemberAddress", result.MemberAddress ?? "");
+                HttpContext.Session.SetString("Admin_MemberDesc", result.MemberDesc ?? "");
 
                 await HttpContext.Session.CommitAsync();
 
@@ -377,7 +429,7 @@ namespace WebApplication1.Controllers
                 }
 
                 //  get current logged-in member from session as STRING
-                string? memberId = HttpContext.Session.GetString("MemberId");
+                string? memberId = HttpContext.Session.GetString("Admin_MemberId");
 
                 if (string.IsNullOrEmpty(memberId))
                 {
@@ -388,7 +440,7 @@ namespace WebApplication1.Controllers
                 var result = await _memberService.UpdateAdminDataAsync(memberId, input);
 
                 //  update session data
-                HttpContext.Session.SetString("MemberNick", result.MemberNick ?? "Admin");
+                HttpContext.Session.SetString("Admin_MemberNick", result.MemberNick ?? "Admin");
                 await HttpContext.Session.CommitAsync();
 
                 return Json(new { success = true, data = result });
@@ -462,8 +514,8 @@ namespace WebApplication1.Controllers
 
         private bool VerifyAdmin()
         {
-            var memberType = HttpContext.Session.GetString("MemberType");
-            return memberType == MemberType.Admin.ToString();
+            var memberType = HttpContext.Session.GetString("Admin_MemberType");
+            return memberType == "Admin";
         }
 
         [NonAction]
