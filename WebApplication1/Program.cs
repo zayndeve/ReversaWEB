@@ -30,6 +30,7 @@ builder.Services.AddSingleton<MemberService>();
 builder.Services.AddSingleton<AuthService>();
 builder.Services.AddSingleton<AnalyticsService>();
 builder.Services.AddSingleton<ProductService>();
+builder.Services.AddSingleton<OrderService>();
 // Email helper (uses MongoDBService internally)
 builder.Services.AddSingleton<EmailHelper>();
 
