@@ -99,13 +99,11 @@
 
     <!-- JSON Data for Charts -->
     <script id="monthlySalesData" type="application/json">
-        @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.monthlySales)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                .Replace("<", "\\u003c"))
+        @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.monthlySales).Replace("<", "\\u003c"))
     </script>
 
     <script id="categoryData" type="application/json">
-        @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.topCategories)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                .Replace("<", "\\u003c"))
+        @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.topCategories).Replace("<", "\\u003c"))
     </script>
 
     <!-- Chart Initialization -->
@@ -138,39 +136,49 @@
             categoryData = [{ name: "No Data", value: 1 }];
         }
 
-        // ==== SALES CHART ====
+        // ===== LINE CHART FOR REVENUE + ORDERS =====
         const labels = salesData.map(entry => entry.month ?? entry.Month);
         const sales = salesData.map(entry => entry.total ?? entry.Total);
         const purchases = salesData.map(entry => entry.orders ?? entry.Orders);
-        // ===== BEAUTIFUL REVENUE VS ORDERS BAR CHART ===== //
+
         new Chart(document.getElementById("salesChart"), {
-            type: "bar",
+            type: "line",
             data: {
                 labels,
                 datasets: [
                     {
                         label: "Revenue (₩)",
-                        backgroundColor: "rgba(123, 97, 255, 0.6)",
-                        borderColor: "#7b61ff",
-                        borderWidth: 2,
-                        borderRadius: 8,
-                        maxBarThickness: 28,
                         data: sales,
+                        fill: true,
+                        borderColor: "#7b61ff",
+                        backgroundColor: "rgba(123, 97, 255, 0.1)",
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointBackgroundColor: "#7b61ff",
+                        pointHoverRadius: 6,
+                        pointHoverBackgroundColor: "#fff",
+                        pointHoverBorderColor: "#7b61ff",
+                        pointHoverBorderWidth: 2,
                     },
                     {
                         label: "Orders",
-                        backgroundColor: "rgba(76, 175, 80, 0.5)",
-                        borderColor: "#4caf50",
-                        borderWidth: 2,
-                        borderRadius: 8,
-                        maxBarThickness: 28,
                         data: purchases,
+                        fill: true,
+                        borderColor: "#4caf50",
+                        backgroundColor: "rgba(76, 175, 80, 0.1)",
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointBackgroundColor: "#4caf50",
+                        pointHoverRadius: 6,
+                        pointHoverBackgroundColor: "#fff",
+                        pointHoverBorderColor: "#4caf50",
+                        pointHoverBorderWidth: 2,
                     },
                 ],
             },
             options: {
                 responsive: true,
-                aspectRatio: 2,
+                maintainAspectRatio: false,
                 interaction: { mode: "index", intersect: false },
                 scales: {
                     x: {
@@ -190,11 +198,11 @@
                     legend: {
                         position: "bottom",
                         labels: {
+                            color: "#333",
                             usePointStyle: true,
                             pointStyle: "circle",
                             boxWidth: 10,
                             padding: 16,
-                            color: "#333",
                             font: { size: 13, weight: "500" },
                         },
                     },
@@ -217,8 +225,7 @@
             },
         });
 
-
-        // ===== ELEGANT PIE CHART FOR CATEGORIES ===== //
+        // ===== RESPONSIVE DOUGHNUT CHART =====
         new Chart(document.getElementById("categoryPieChart"), {
             type: "doughnut",
             data: {
@@ -233,16 +240,17 @@
                             "rgba(255,152,0,0.8)",
                             "rgba(233,30,99,0.8)",
                         ],
-                        borderColor: "#fff",
                         borderWidth: 4,
-                        hoverOffset: 10,
+                        borderColor: "#fff",
+                        hoverOffset: 8,
                     },
                 ],
             },
             options: {
-                cutout: "75%",
-                radius: "80%",
                 responsive: true,
+                maintainAspectRatio: false,
+                cutout: "75%",
+                radius: "85%",
                 plugins: {
                     legend: {
                         position: "bottom",
@@ -251,6 +259,8 @@
                             font: { size: 13, weight: "500" },
                             usePointStyle: true,
                             pointStyle: "rectRounded",
+                            boxWidth: 10,
+                            padding: 12,
                         },
                     },
                     tooltip: {
@@ -270,66 +280,7 @@
         });
     </script>
 
-    <!-- Leaderboard Styles -->
+    <!-- Dashboard Styles -->
     <style>
-        .rank-cell {
-            text-align: center;
-            padding: 12px !important;
-        }
-
-        .buyer-name {
-            color: #333;
-            font-weight: 600;
-            display: inline-block;
-        }
-
-        .buyer-amount {
-            color: #7b61ff;
-            font-weight: 600;
-            display: inline-block;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .buyer-amount:hover {
-            color: #5a43d2;
-            text-decoration: underline;
-        }
-
-        /* Rank icons */
-        .first-rank {
-            color: #fbc02d;
-            font-size: 22px;
-            filter: drop-shadow(0 2px 4px rgba(251, 192, 45, 0.4));
-        }
-
-        .second-rank {
-            color: #b0bec5;
-            font-size: 20px;
-            filter: drop-shadow(0 2px 4px rgba(176, 190, 197, 0.4));
-        }
-
-        .third-rank {
-            color: #ff7043;
-            font-size: 20px;
-            filter: drop-shadow(0 2px 4px rgba(255, 112, 67, 0.4));
-        }
-
-        .rank-number {
-            display: inline-block;
-            background: #f0f0f0;
-            color: #666;
-            font-weight: 600;
-            border-radius: 50%;
-            width: 26px;
-            height: 26px;
-            text-align: center;
-            line-height: 26px;
-            font-size: 13px;
-        }
-
-        .top-buyers-table tbody tr:hover {
-            background-color: #f9f9f9;
-        }
     </style>
 </div>

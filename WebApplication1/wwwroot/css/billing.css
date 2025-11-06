@@ -250,3 +250,122 @@ canvas {
   line-height: 26px;
   font-size: 13px;
 }
+/* ===== CHART BOX STYLES ===== */
+.chart-box {
+  position: relative;
+  height: 320px;
+  background: linear-gradient(180deg, #fff 0%, #fafafa 100%);
+  border-radius: 18px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+}
+
+.chart-box:hover {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.chart-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.chart-header select {
+  padding: 6px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: #fff;
+  color: #555;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.chart-header select:hover {
+  border-color: #7b61ff;
+}
+
+.chart-box canvas {
+  flex: 1;
+  position: relative;
+}
+
+#categoryPieChart {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 280px;
+  max-height: 280px;
+  margin: 0 auto;
+}
+
+/* ===== LEADERBOARD STYLES ===== */
+.rank-cell {
+  text-align: center;
+  padding: 12px !important;
+}
+
+.buyer-name {
+  color: #333;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.buyer-amount {
+  color: #7b61ff;
+  font-weight: 600;
+  display: inline-block;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.buyer-amount:hover {
+  color: #5a43d2;
+  text-decoration: underline;
+}
+
+/* Rank icons */
+.first-rank {
+  color: #fbc02d;
+  font-size: 22px;
+  filter: drop-shadow(0 2px 4px rgba(251, 192, 45, 0.4));
+}
+
+.second-rank {
+  color: #b0bec5;
+  font-size: 20px;
+  filter: drop-shadow(0 2px 4px rgba(176, 190, 197, 0.4));
+}
+
+.third-rank {
+  color: #ff7043;
+  font-size: 20px;
+  filter: drop-shadow(0 2px 4px rgba(255, 112, 67, 0.4));
+}
+
+.rank-number {
+  display: inline-block;
+  background: #f0f0f0;
+  color: #666;
+  font-weight: 600;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  text-align: center;
+  line-height: 26px;
+  font-size: 13px;
+}
+
+.top-buyers-table tbody tr:hover {
+  background-color: #f9f9f9;
+}
