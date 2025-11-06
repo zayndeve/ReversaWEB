@@ -392,25 +392,34 @@ namespace WebApplication1.Controllers
 
         // ====== Logout ====== //
 
-        [HttpGet("admin/logout")]
-        public async Task<IActionResult> ProcessLogout()
+
+        [HttpPost("admin/logout")]
+        public IActionResult AdminLogout()
         {
             try
             {
-                _logger.LogInformation("processLogout");
+                _logger.LogInformation("admin logout");
 
-                HttpContext.Session.Clear();
-                await HttpContext.Session.CommitAsync();
+                // ✅ Only clear Admin session keys (matching the exact case used in login)
+                HttpContext.Session.Remove("Admin_MemberId");
+                HttpContext.Session.Remove("Admin_MemberNick");
+                HttpContext.Session.Remove("Admin_MemberType");
+                HttpContext.Session.Remove("Admin_MemberImage");
+                HttpContext.Session.Remove("Admin_MemberEmail");
+                HttpContext.Session.Remove("Admin_MemberPhone");
+                HttpContext.Session.Remove("Admin_MemberAddress");
+                HttpContext.Session.Remove("Admin_MemberDesc");
 
-                return RedirectToAction("GoHome", "Admin");
+                return Ok(new { logout = true, message = "Logged out successfully" });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error ProcessLogout");
-                TempData["AlertMessage"] = "Logout failed";
-                return RedirectToAction("GoHome", "Admin");
+                _logger.LogError(ex, "Error admin logout");
+                return StatusCode(500, new { logout = false, message = "Logout failed" });
             }
         }
+
+
 
 
         // ====== Admin Panel (Update Data) ====== //
@@ -575,7 +584,34 @@ namespace WebApplication1.Controllers
                 return RedirectToAction("GetDashboard", "Admin");
             }
         }
+        // ===== Get Admin Session Member =====
+        [HttpGet("admin-self")]
+        public async Task<IActionResult> GetAdminSelf()
+        {
+            try
+            {
+                //  Check authentication from ADMIN session
+                var adminIdString = HttpContext.Session.GetString("Admin_MemberId");
+                if (string.IsNullOrEmpty(adminIdString))
+                {
+                    return StatusCode(401, new
+                    {
+                        code = 401,
+                        message = "Not authenticated as admin"
+                    });
+                }
 
+                //  Re-fetch fresh admin info from MongoDB
+                var fullAdmin = await _memberService.GetByIdAsync(adminIdString);
+
+                return Ok(fullAdmin); //  Return up-to-date admin
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in GetAdminSelf");
+                return StatusCode(500, new { message = "Server error" });
+            }
+        }
 
     }
 }

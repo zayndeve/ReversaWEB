@@ -40,8 +40,12 @@
 
   <!-- ===== Logout Section ===== -->
   <div class="sidebar-logout">
-    <a href="/admin/logout" class="nav-item" onclick="return confirm('Do you want to logout?')">
-      <i class="fas fa-sign-out-alt"></i> Log out
-    </a>
+    <form id="logoutForm" action="/admin/logout" method="POST" style="margin: 0;">
+      @Html.AntiForgeryToken()
+      <button type="submit" class="nav-item"
+        style="background: none; border: none; width: 100%; text-align: left; cursor: pointer;">
+        <i class="fas fa-sign-out-alt"></i> Log out
+      </button>
+    </form>
   </div>
 </div>

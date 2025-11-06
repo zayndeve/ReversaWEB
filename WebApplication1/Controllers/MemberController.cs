@@ -109,6 +109,11 @@ namespace WebApplication1.Controllers
                 HttpContext.Session.SetString("User_MemberType", result.MemberType.ToString());
                 HttpContext.Session.SetString("User_MemberImage", result.MemberImage ?? string.Empty);
 
+                // ✅ Commit session to ensure cookie is set and persisted
+                await HttpContext.Session.CommitAsync();
+
+                _logger.LogInformation($"✅ User logged in: {result.Id}");
+
                 return Ok(new { member = result });
             }
             catch (AppException ex)
@@ -129,7 +134,13 @@ namespace WebApplication1.Controllers
             try
             {
                 _logger.LogInformation("logout");
-                HttpContext.Session.Clear();
+
+                // ✅ Only clear User session keys, not Admin keys
+                HttpContext.Session.Remove("User_MemberId");
+                HttpContext.Session.Remove("User_MemberNick");
+                HttpContext.Session.Remove("User_MemberType");
+                HttpContext.Session.Remove("User_MemberImage");
+
                 return Ok(new { logout = true });
             }
             catch (Exception ex)
