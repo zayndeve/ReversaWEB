@@ -125,11 +125,11 @@
 
     <!-- Pass chart data safely -->
     <script id="monthlySalesData" type="application/json">
-        @Html.Raw(Json.Serialize(Model.monthlySales).Replace("<", "\\u003c"))
+        @Html.Raw(Json.Serialize(Model.monthlySales).ToString().Replace("<", "\\u003c"))
     </script>
 
     <script id="categoryData" type="application/json">
-        @Html.Raw(Json.Serialize(Model.topCategories).Replace("<", "\\u003c"))
+        @Html.Raw(Json.Serialize(Model.topCategories).ToString().Replace("<", "\\u003c"))
     </script>
 
     <!-- Chart Scripts -->
