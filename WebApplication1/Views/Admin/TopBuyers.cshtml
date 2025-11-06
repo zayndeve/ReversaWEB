@@ -21,23 +21,20 @@
             @await Html.PartialAsync("includes/_Navbar", model: null)
 
             <!-- CHARTS SECTION -->
-            <div class="charts-grid">
-                <!-- Bar Chart -->
-                <div class="chart-box">
-                    <div class="chart-header">
-                        <h3>Sales & Purchases</h3>
-                        <select>
-                            <option>6 Months</option>
-                            <option>12 Months</option>
-                        </select>
-                    </div>
-                    <canvas id="salesChart"></canvas>
-                </div>
-
-                <!-- Pie Chart -->
+            <div class="charts-grid single-chart">
                 <div class="chart-box">
                     <h3>Top Categories</h3>
                     <canvas id="categoryPieChart"></canvas>
+                    <div class="chart-summary">
+                        <p class="revenue-text">
+                            <i class="fa-solid fa-sack-dollar"></i>
+                            Total Revenue: <span id="totalRevenueText">₩0</span>
+                        </p>
+                        <p class="orders-text">
+                            <i class="fa-solid fa-box"></i>
+                            Total Orders: <span id="totalOrdersText">0</span>
+                        </p>
+                    </div>
                 </div>
             </div>
 
@@ -136,94 +133,11 @@
             categoryData = [{ name: "No Data", value: 1 }];
         }
 
-        // ===== LINE CHART FOR REVENUE + ORDERS =====
-        const labels = salesData.map(entry => entry.month ?? entry.Month);
-        const sales = salesData.map(entry => entry.total ?? entry.Total);
-        const purchases = salesData.map(entry => entry.orders ?? entry.Orders);
-
-        new Chart(document.getElementById("salesChart"), {
-            type: "line",
-            data: {
-                labels,
-                datasets: [
-                    {
-                        label: "Revenue (₩)",
-                        data: sales,
-                        fill: true,
-                        borderColor: "#7b61ff",
-                        backgroundColor: "rgba(123, 97, 255, 0.1)",
-                        tension: 0.4,
-                        pointRadius: 4,
-                        pointBackgroundColor: "#7b61ff",
-                        pointHoverRadius: 6,
-                        pointHoverBackgroundColor: "#fff",
-                        pointHoverBorderColor: "#7b61ff",
-                        pointHoverBorderWidth: 2,
-                    },
-                    {
-                        label: "Orders",
-                        data: purchases,
-                        fill: true,
-                        borderColor: "#4caf50",
-                        backgroundColor: "rgba(76, 175, 80, 0.1)",
-                        tension: 0.4,
-                        pointRadius: 4,
-                        pointBackgroundColor: "#4caf50",
-                        pointHoverRadius: 6,
-                        pointHoverBackgroundColor: "#fff",
-                        pointHoverBorderColor: "#4caf50",
-                        pointHoverBorderWidth: 2,
-                    },
-                ],
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: { mode: "index", intersect: false },
-                scales: {
-                    x: {
-                        ticks: { color: "#555", font: { size: 12, weight: "500" } },
-                        grid: { display: false },
-                    },
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            color: "#777",
-                            callback: value => "₩" + value.toLocaleString(),
-                        },
-                        grid: { color: "rgba(0,0,0,0.05)" },
-                    },
-                },
-                plugins: {
-                    legend: {
-                        position: "bottom",
-                        labels: {
-                            color: "#333",
-                            usePointStyle: true,
-                            pointStyle: "circle",
-                            boxWidth: 10,
-                            padding: 16,
-                            font: { size: 13, weight: "500" },
-                        },
-                    },
-                    tooltip: {
-                        backgroundColor: "#fff",
-                        borderColor: "#eee",
-                        borderWidth: 1,
-                        titleColor: "#333",
-                        bodyColor: "#555",
-                        bodyFont: { weight: "500" },
-                        callbacks: {
-                            label: ctx => {
-                                const label = ctx.dataset.label || "";
-                                const val = ctx.parsed.y || 0;
-                                return `${label}: ₩${val.toLocaleString()}`;
-                            },
-                        },
-                    },
-                },
-            },
-        });
+        // Calculate totals from monthly sales data
+        const totalRevenue = salesData?.reduce((sum, s) => sum + (s.total ?? s.Total ?? 0), 0) || 0;
+        const totalOrders = salesData?.reduce((sum, s) => sum + (s.orders ?? s.Orders ?? 0), 0) || 0;
+        document.getElementById("totalRevenueText").textContent = "₩" + totalRevenue.toLocaleString();
+        document.getElementById("totalOrdersText").textContent = totalOrders.toLocaleString();
 
         // ===== RESPONSIVE DOUGHNUT CHART =====
         new Chart(document.getElementById("categoryPieChart"), {
@@ -281,6 +195,6 @@
     </script>
 
     <!-- Dashboard Styles -->
-    <style>
-    </style>
+
+    /* ===== LEADERBOARD STYLES ===== */
 </div>
