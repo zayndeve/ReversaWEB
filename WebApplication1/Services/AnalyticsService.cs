@@ -17,7 +17,7 @@ namespace WebApplication1.Services
             _orders = mongo.Database.GetCollection<Order>("orders");
             _orderItems = mongo.Database.GetCollection<OrderItem>("orderItems");
             _members = mongo.Database.GetCollection<Member>("members");
-            _products = mongo.Database.GetCollection<Product>("Products");
+            _products = mongo.Database.GetCollection<Product>("Products"); // ✅ matches DB
         }
 
         // ===== KPI ===== //
@@ -30,13 +30,15 @@ namespace WebApplication1.Services
                 .Group(new BsonDocument
                 {
                     { "_id", BsonNull.Value },
-                    { "total", new BsonDocument("$sum", "$TotalAmount") }
+                    { "total", new BsonDocument("$sum", "$totalAmount") }
                 })
                 .FirstOrDefaultAsync();
 
             var totalRevenue = totalRevenueAgg?["total"].ToDecimal() ?? 0;
-            var customers = await _orders.DistinctAsync<string>("MemberId", Builders<Order>.Filter.Empty);
+            // get unique member IDs as ObjectId
+            var customers = await _orders.DistinctAsync<ObjectId>("memberId", Builders<Order>.Filter.Empty);
             var totalCustomers = customers.ToList().Count;
+
 
             var averageOrder = totalOrders > 0 ? totalRevenue / totalOrders : 0;
 
@@ -59,11 +61,12 @@ namespace WebApplication1.Services
                 {
                     { "_id", new BsonDocument
                         {
-                            { "year", new BsonDocument("$year", "$CreatedAt") },
-                            { "month", new BsonDocument("$month", "$CreatedAt") }
+                            // ✅ use lowercase 'createdAt'
+                            { "year", new BsonDocument("$year", "$createdAt") },
+                            { "month", new BsonDocument("$month", "$createdAt") }
                         }
                     },
-                    { "total", new BsonDocument("$sum", "$TotalAmount") },
+                    { "total", new BsonDocument("$sum", "$totalAmount") },
                     { "orders", new BsonDocument("$sum", 1) }
                 }),
                 new BsonDocument("$sort", new BsonDocument
@@ -74,9 +77,6 @@ namespace WebApplication1.Services
             };
 
             var results = await _orders.Aggregate<BsonDocument>(pipeline).ToListAsync();
-
-            Console.WriteLine($"✅ Found {results.Count} orders with status 'PAID'");
-            Console.WriteLine($"✅ Retrieved {results.Count} monthly sales entries");
 
             return results.Select(r => new
             {
@@ -91,7 +91,15 @@ namespace WebApplication1.Services
         {
             var pipeline = new[]
             {
-                new BsonDocument("$addFields", new BsonDocument("productId", new BsonDocument("$toObjectId", "$productId"))),
+                // ✅ convert productId only if it’s a string
+                new BsonDocument("$addFields", new BsonDocument("productId",
+                    new BsonDocument("$cond", new BsonDocument
+                    {
+                        { "if", new BsonDocument("$eq", new BsonArray { new BsonDocument("$type", "$productId"), "string" }) },
+                        { "then", new BsonDocument("$toObjectId", "$productId") },
+                        { "else", "$productId" }
+                    }))
+                ),
                 new BsonDocument("$lookup", new BsonDocument
                 {
                     { "from", "Products" },
@@ -102,7 +110,8 @@ namespace WebApplication1.Services
                 new BsonDocument("$unwind", "$product"),
                 new BsonDocument("$group", new BsonDocument
                 {
-                    { "_id", "$product.productCategory" },
+                    // ✅ correct key (capital P)
+                    { "_id", "$product.ProductCategory" },
                     { "value", new BsonDocument("$sum",
                         new BsonDocument("$multiply", new BsonArray { "$itemPrice", "$itemQuantity" })) }
                 }),
@@ -111,8 +120,6 @@ namespace WebApplication1.Services
             };
 
             var results = await _orderItems.Aggregate<BsonDocument>(pipeline).ToListAsync();
-
-            Console.WriteLine($"✅ Retrieved {results.Count} top categories");
 
             return results.Select(r => new
             {
@@ -126,7 +133,8 @@ namespace WebApplication1.Services
         {
             var pipeline = new[]
             {
-                new BsonDocument("$addFields", new BsonDocument("orderId", new BsonDocument("$toObjectId", "$orderId"))),
+                new BsonDocument("$addFields", new BsonDocument("orderId",
+                    new BsonDocument("$toObjectId", "$orderId"))),
                 new BsonDocument("$lookup", new BsonDocument
                 {
                     { "from", "orders" },
@@ -152,19 +160,25 @@ namespace WebApplication1.Services
 
             foreach (var buyer in result)
             {
-                var memberId = buyer["_id"].AsObjectId.ToString();
-                var member = await _members.Find(m => m.Id == memberId).FirstOrDefaultAsync();
+                // handle both string and ObjectId _id from aggregation
+                ObjectId memberId;
+                if (buyer["_id"].BsonType == BsonType.ObjectId)
+                    memberId = buyer["_id"].AsObjectId;
+                else
+                    memberId = ObjectId.Parse(buyer["_id"].ToString());
+
+                var member = await _members.Find(Builders<Member>.Filter.Eq("_id", memberId)).FirstOrDefaultAsync();
 
                 buyers.Add(new
                 {
                     Nickname = member?.MemberNick ?? "Unknown",
                     TotalSpent = buyer["totalSpent"].ToDecimal(),
                     TotalSpentFormatted = string.Format("{0:N0}", buyer["totalSpent"].ToDecimal()),
-                    LastPurchaseFormatted = buyer["lastPurchase"].ToUniversalTime().ToShortDateString()
+                    LastPurchaseFormatted = ((DateTime)buyer["lastPurchase"]).ToShortDateString()
                 });
             }
 
-            Console.WriteLine($"✅ Retrieved {buyers.Count} top buyers");
+
             return buyers;
         }
     }

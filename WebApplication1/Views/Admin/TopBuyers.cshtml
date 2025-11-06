@@ -4,10 +4,10 @@
     Layout = "_Layout";
 }
 
-@* Styles: prefer Url.Content/~/ paths so they resolve correctly in Razor *@
 <link rel="stylesheet" href="@Url.Content("~/css/dashboard.css")" />
 <link rel="stylesheet" href="@Url.Content("~/css/billing.css")" />
 <link rel="stylesheet" href="@Url.Content("~/css/common.css")" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <div class="dashboard-page">
@@ -19,22 +19,6 @@
         <!-- Main Content -->
         <div class="dashboard-content">
             @await Html.PartialAsync("includes/_Navbar", model: null)
-
-            <!-- KPI CARDS -->
-            @* <div class="kpi-cards">
-                <div class="kpi-card purple">
-                    <h4>Total Orders</h4>
-                    <h2>@Model.kpis.totalOrders</h2>
-                </div>
-                <div class="kpi-card blue">
-                    <h4>Total Revenue</h4>
-                    <h2>₩@Model.kpis.totalRevenue.ToString("N0")</h2>
-                </div>
-                <div class="kpi-card green">
-                    <h4>Total Customers</h4>
-                    <h2>@Model.kpis.totalCustomers</h2>
-                </div>
-            </div> *@
 
             <!-- CHARTS SECTION -->
             <div class="charts-grid">
@@ -76,26 +60,26 @@
                             foreach (dynamic buyer in Model.topBuyers)
                             {
                                 <tr>
-                                    <td>
+                                    <td class="rank-cell">
                                         @if (index == 0)
                                         {
-                                            <text>🥇</text>
+                                            <i class="fa-solid fa-trophy first-rank"></i>
                                         }
                                         else if (index == 1)
                                         {
-                                            <text>🥈</text>
+                                            <i class="fa-solid fa-medal second-rank"></i>
                                         }
                                         else if (index == 2)
                                         {
-                                            <text>🥉</text>
+                                            <i class="fa-solid fa-award third-rank"></i>
                                         }
                                         else
                                         {
-                                            @(index + 1)
+                                            <span class="rank-number">@((index + 1).ToString("D2"))</span>
                                         }
                                     </td>
-                                    <td>@buyer.Nickname</td>
-                                    <td>@buyer.TotalSpentFormatted</td>
+                                    <td><span class="buyer-name">@buyer.Nickname</span></td>
+                                    <td><span class="buyer-amount">₩@buyer.TotalSpentFormatted</span></td>
                                     <td>@buyer.LastPurchaseFormatted</td>
                                 </tr>
                                 index++;
@@ -113,106 +97,239 @@
         </div>
     </div>
 
-    <!-- Debug Output for Monthly Sales -->
-    @* <pre style="font-size: 10px; color: red">
-        @Json.Serialize(Model.monthlySales)
-    </pre> *@
-
-    <!-- Debug Output for Top Categories -->
-    @* <pre style="font-size: 10px; color: blue">
-        @Json.Serialize(Model.topCategories)
-    </pre> *@
-
-    <!-- Pass chart data safely -->
+    <!-- JSON Data for Charts -->
     <script id="monthlySalesData" type="application/json">
-        @Html.Raw(Json.Serialize(Model.monthlySales).ToString().Replace("<", "\\u003c"))
+        @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.monthlySales)
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                .Replace("<", "\\u003c"))
     </script>
 
     <script id="categoryData" type="application/json">
-        @Html.Raw(Json.Serialize(Model.topCategories).ToString().Replace("<", "\\u003c"))
+        @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.topCategories)
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                .Replace("<", "\\u003c"))
     </script>
 
-    <!-- Chart Scripts -->
+    <!-- Chart Initialization -->
     <script>
+        // ==== LOAD DATA ====
         let salesData = [];
+        let categoryData = [];
+
         try {
-            const salesRaw = document
-                .getElementById("monthlySalesData")
-                .textContent.trim();
+            const salesRaw = document.getElementById("monthlySalesData").textContent.trim();
             salesData = JSON.parse(salesRaw);
-            console.log("✅ Monthly sales data loaded:", salesData);
+            console.log("✅ Monthly Sales:", salesData);
         } catch (e) {
-            console.warn("❌ monthlySalesData not available:", e);
+            console.warn("⚠️ monthlySalesData not available:", e);
         }
 
-        if (!salesData || salesData.length === 0) {
+        try {
+            const categoryRaw = document.getElementById("categoryData").textContent.trim();
+            categoryData = JSON.parse(categoryRaw);
+            console.log("✅ Category Data:", categoryData);
+        } catch (e) {
+            console.warn("⚠️ categoryData not available:", e);
+        }
+
+        if (!Array.isArray(salesData) || salesData.length === 0) {
             salesData = [{ month: "N/A", total: 0, orders: 0 }];
         }
 
-        let categoryData = [];
-        try {
-            const categoryRaw = document
-                .getElementById("categoryData")
-                .textContent.trim();
-            categoryData = JSON.parse(categoryRaw);
-            console.log("✅ Category data loaded:", categoryData);
-        } catch (e) {
-            console.warn("❌ categoryData not available:", e);
-        }
-
-        if (!categoryData || categoryData.length === 0) {
+        if (!Array.isArray(categoryData) || categoryData.length === 0) {
             categoryData = [{ name: "No Data", value: 1 }];
         }
 
-        const labels = salesData.map((entry) => entry.month);
-        const sales = salesData.map((entry) => entry.total);
-        const purchases = salesData.map((entry) => entry.orders);
-
+        // ==== SALES CHART ====
+        const labels = salesData.map(entry => entry.month ?? entry.Month);
+        const sales = salesData.map(entry => entry.total ?? entry.Total);
+        const purchases = salesData.map(entry => entry.orders ?? entry.Orders);
+        // ===== BEAUTIFUL REVENUE VS ORDERS BAR CHART ===== //
         new Chart(document.getElementById("salesChart"), {
             type: "bar",
             data: {
-                labels: labels,
+                labels,
                 datasets: [
                     {
-                        label: "Sales",
-                        backgroundColor: "#FF6384",
+                        label: "Revenue (₩)",
+                        backgroundColor: "rgba(123, 97, 255, 0.6)",
+                        borderColor: "#7b61ff",
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        maxBarThickness: 28,
                         data: sales,
                     },
                     {
-                        label: "Purchases",
-                        backgroundColor: "#36A2EB",
+                        label: "Orders",
+                        backgroundColor: "rgba(76, 175, 80, 0.5)",
+                        borderColor: "#4caf50",
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        maxBarThickness: 28,
                         data: purchases,
                     },
                 ],
             },
             options: {
                 responsive: true,
-                plugins: { legend: { position: "bottom" } },
-                scales: { y: { beginAtZero: true } },
+                aspectRatio: 2,
+                interaction: { mode: "index", intersect: false },
+                scales: {
+                    x: {
+                        ticks: { color: "#555", font: { size: 12, weight: "500" } },
+                        grid: { display: false },
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: "#777",
+                            callback: value => "₩" + value.toLocaleString(),
+                        },
+                        grid: { color: "rgba(0,0,0,0.05)" },
+                    },
+                },
+                plugins: {
+                    legend: {
+                        position: "bottom",
+                        labels: {
+                            usePointStyle: true,
+                            pointStyle: "circle",
+                            boxWidth: 10,
+                            padding: 16,
+                            color: "#333",
+                            font: { size: 13, weight: "500" },
+                        },
+                    },
+                    tooltip: {
+                        backgroundColor: "#fff",
+                        borderColor: "#eee",
+                        borderWidth: 1,
+                        titleColor: "#333",
+                        bodyColor: "#555",
+                        bodyFont: { weight: "500" },
+                        callbacks: {
+                            label: ctx => {
+                                const label = ctx.dataset.label || "";
+                                const val = ctx.parsed.y || 0;
+                                return `${label}: ₩${val.toLocaleString()}`;
+                            },
+                        },
+                    },
+                },
             },
         });
 
+
+        // ===== ELEGANT PIE CHART FOR CATEGORIES ===== //
         new Chart(document.getElementById("categoryPieChart"), {
-            type: "pie",
+            type: "doughnut",
             data: {
-                labels: categoryData.map((c) => c.Name),
+                labels: categoryData.map(c => c.name ?? c.Name),
                 datasets: [
                     {
-                        data: categoryData.map((c) => c.Value),
+                        data: categoryData.map(c => c.value ?? c.Value),
                         backgroundColor: [
-                            "#FF6384",
-                            "#36A2EB",
-                            "#FFCE56",
-                            "#8BC34A",
-                            "#FF9800",
+                            "rgba(123,97,255,0.8)",
+                            "rgba(33,150,243,0.8)",
+                            "rgba(76,175,80,0.8)",
+                            "rgba(255,152,0,0.8)",
+                            "rgba(233,30,99,0.8)",
                         ],
+                        borderColor: "#fff",
+                        borderWidth: 4,
+                        hoverOffset: 10,
                     },
                 ],
             },
             options: {
+                cutout: "75%",
+                radius: "80%",
                 responsive: true,
-                plugins: { legend: { position: "right" } },
-            },
+                plugins: {
+                    legend: {
+                        position: "bottom",
+                        labels: {
+                            color: "#333",
+                            font: { size: 13, weight: "500" },
+                            usePointStyle: true,
+                            pointStyle: "rectRounded",
+                        },
+                    },
+                    tooltip: {
+                        backgroundColor: "#fff",
+                        borderColor: "#eee",
+                        borderWidth: 1,
+                        titleColor: "#333",
+                        bodyColor: "#555",
+                        callbacks: {
+                            label: ctx => `${ctx.label}: ₩${ctx.parsed.toLocaleString()}`,
+                        },
+                    },
+                },
+            }
+
+
         });
     </script>
+
+    <!-- Leaderboard Styles -->
+    <style>
+        .rank-cell {
+            text-align: center;
+            padding: 12px !important;
+        }
+
+        .buyer-name {
+            color: #333;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .buyer-amount {
+            color: #7b61ff;
+            font-weight: 600;
+            display: inline-block;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .buyer-amount:hover {
+            color: #5a43d2;
+            text-decoration: underline;
+        }
+
+        /* Rank icons */
+        .first-rank {
+            color: #fbc02d;
+            font-size: 22px;
+            filter: drop-shadow(0 2px 4px rgba(251, 192, 45, 0.4));
+        }
+
+        .second-rank {
+            color: #b0bec5;
+            font-size: 20px;
+            filter: drop-shadow(0 2px 4px rgba(176, 190, 197, 0.4));
+        }
+
+        .third-rank {
+            color: #ff7043;
+            font-size: 20px;
+            filter: drop-shadow(0 2px 4px rgba(255, 112, 67, 0.4));
+        }
+
+        .rank-number {
+            display: inline-block;
+            background: #f0f0f0;
+            color: #666;
+            font-weight: 600;
+            border-radius: 50%;
+            width: 26px;
+            height: 26px;
+            text-align: center;
+            line-height: 26px;
+            font-size: 13px;
+        }
+
+        .top-buyers-table tbody tr:hover {
+            background-color: #f9f9f9;
+        }
+    </style>
 </div>

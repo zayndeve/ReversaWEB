@@ -544,20 +544,20 @@ namespace WebApplication1.Controllers
 
 
         // ====== Analytics Dashboard ====== //
-
         [HttpGet("admin/analytics-dashboard")]
         public async Task<IActionResult> GetAnalyticsDashboardData()
         {
             try
             {
+                // verify admin access
+                if (!VerifyAdmin()) return RequireAdminAccess();
+
                 var kpis = await _analyticsService.GetKPIAsync();
                 var monthlySales = await _analyticsService.GetMonthlySalesAsync();
                 var topCategories = await _analyticsService.GetTopCategoriesAsync();
                 var topBuyers = await _analyticsService.GetTopBuyersAsync();
 
-                _logger.LogInformation("monthlySales: {@MonthlySales}", monthlySales);
-                _logger.LogInformation("topCategories: {@TopCategories}", topCategories);
-                _logger.LogInformation("topBuyers: {@TopBuyers}", topBuyers);
+                _logger.LogInformation("✅ Analytics dashboard loaded successfully.");
 
                 return View("TopBuyers", new
                 {
@@ -569,10 +569,13 @@ namespace WebApplication1.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Analytics Dashboard Error");
+                _logger.LogError(ex, "❌ Analytics Dashboard Error");
+                TempData["AlertType"] = "danger";
+                TempData["AlertMessage"] = "Failed to load analytics data.";
                 return RedirectToAction("GetDashboard", "Admin");
             }
         }
+
 
     }
 }
