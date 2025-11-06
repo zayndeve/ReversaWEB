@@ -30,7 +30,7 @@
                     <div class="chart-summary">
                         <p class="revenue-text">
                             <i class="fa-solid fa-sack-dollar"></i>
-                            Total Revenue: <span id="totalRevenueText">₩0</span>
+                            Total Revenue: <span id="totalRevenueText">$0</span>
                         </p>
                         <p class="orders-text">
                             <i class="fa-solid fa-box"></i>
@@ -78,7 +78,7 @@
                                         }
                                     </td>
                                     <td><span class="buyer-name">@buyer.Nickname</span></td>
-                                    <td><span class="buyer-amount">₩@buyer.TotalSpentFormatted</span></td>
+                                    <td><span class="buyer-amount">$@buyer.TotalSpentFormatted</span></td>
                                     <td>@buyer.LastPurchaseFormatted</td>
                                 </tr>
                                 index++;
@@ -138,7 +138,7 @@
         // Calculate totals from monthly sales data
         const totalRevenue = salesData?.reduce((sum, s) => sum + (s.total ?? s.Total ?? 0), 0) || 0;
         const totalOrders = salesData?.reduce((sum, s) => sum + (s.orders ?? s.Orders ?? 0), 0) || 0;
-        document.getElementById("totalRevenueText").textContent = "₩" + totalRevenue.toLocaleString();
+        document.getElementById("totalRevenueText").textContent = "$" + totalRevenue.toLocaleString();
         document.getElementById("totalOrdersText").textContent = totalOrders.toLocaleString();
 
         // ===== RESPONSIVE DOUGHNUT CHART =====
@@ -186,7 +186,7 @@
                         titleColor: "#333",
                         bodyColor: "#555",
                         callbacks: {
-                            label: ctx => `${ctx.label}: ₩${ctx.parsed.toLocaleString()}`,
+                            label: ctx => `${ctx.label}: $${ctx.parsed.toLocaleString()}`,
                         },
                     },
                 },

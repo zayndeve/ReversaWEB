@@ -257,23 +257,22 @@ canvas {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
   padding: 28px 30px 40px;
   width: 100%;
-  max-width: 480px;
+  max-width: 700px;
   text-align: center;
   overflow: hidden;
 }
 
 #categoryPieChart {
   width: 100% !important;
-  height: 260px !important;
-  max-width: 260px;
-  margin: 0 auto 20px;
+  height: 350px !important;
+  max-width: 600px;
   display: block;
 }
 
 .chart-container {
   position: relative;
   width: 100%;
-  height: 260px;
+  height: 350px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -315,7 +314,7 @@ canvas {
 @media (max-width: 768px) {
   .chart-box {
     max-width: 100%;
-    padding: 20px 20px 30px;
+    margin-top: 40px;
   }
 
   .chart-container {
