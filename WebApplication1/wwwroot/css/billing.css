@@ -173,11 +173,6 @@ canvas {
   color: #333;
 }
 
-canvas {
-  min-height: 320px;
-  transition: all 0.2s ease;
-}
-
 /* Chart Legends become soft badges */
 .chart-legend {
   display: flex;
