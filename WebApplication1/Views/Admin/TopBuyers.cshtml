@@ -125,13 +125,11 @@
 
     <!-- Pass chart data safely -->
     <script id="monthlySalesData" type="application/json">
-        @* @Json.Serialize(Model.monthlySales).Replace("<", "\\u003c") *@
-        []
+        @Html.Raw(Json.Serialize(Model.monthlySales).Replace("<", "\\u003c"))
     </script>
 
     <script id="categoryData" type="application/json">
-        @* @Json.Serialize(Model.topCategories).Replace("<", "\\u003c") *@
-        []
+        @Html.Raw(Json.Serialize(Model.topCategories).Replace("<", "\\u003c"))
     </script>
 
     <!-- Chart Scripts -->
@@ -142,8 +140,9 @@
                 .getElementById("monthlySalesData")
                 .textContent.trim();
             salesData = JSON.parse(salesRaw);
+            console.log("✅ Monthly sales data loaded:", salesData);
         } catch (e) {
-            console.warn("monthlySalesData not available");
+            console.warn("❌ monthlySalesData not available:", e);
         }
 
         if (!salesData || salesData.length === 0) {
@@ -156,8 +155,9 @@
                 .getElementById("categoryData")
                 .textContent.trim();
             categoryData = JSON.parse(categoryRaw);
+            console.log("✅ Category data loaded:", categoryData);
         } catch (e) {
-            console.warn("categoryData not available");
+            console.warn("❌ categoryData not available:", e);
         }
 
         if (!categoryData || categoryData.length === 0) {
@@ -195,10 +195,10 @@
         new Chart(document.getElementById("categoryPieChart"), {
             type: "pie",
             data: {
-                labels: categoryData.map((c) => c.name),
+                labels: categoryData.map((c) => c.Name),
                 datasets: [
                     {
-                        data: categoryData.map((c) => c.value),
+                        data: categoryData.map((c) => c.Value),
                         backgroundColor: [
                             "#FF6384",
                             "#36A2EB",

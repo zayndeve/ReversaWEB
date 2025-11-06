@@ -4,7 +4,11 @@ using WebApplication1.Core.Utils;
 using System.Text.Json.Serialization;
 using System.Text.Json;
 
-
+// =======================================
+// 🔹 Fix for .NET 9 logger crash (must be BEFORE CreateBuilder)
+// =======================================
+// Prevents: InvalidCastException (StateMachineAttribute[])
+AppContext.SetSwitch("System.Diagnostics.StackTrace.UseNativeStackTrace", false);
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -59,12 +63,6 @@ builder.Services.AddCors(options =>
 // 🔹 Build App
 // =======================================
 var app = builder.Build();
-
-// =======================================
-// 🔹 Fix for .NET 9 logger crash
-// =======================================
-// Prevents: InvalidCastException (StateMachineAttribute[])
-AppContext.SetSwitch("System.Diagnostics.StackTrace.UseNativeStackTrace", false);
 
 // =======================================
 // 🔹 Developer Mode Middleware
